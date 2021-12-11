@@ -16,4 +16,4 @@ Why do we need your email ?
 By creating jump account you agree to our terms and conditions.
 
 © 2021 Aayan Yasin
-✔ Version 1.0.12.1
+✔ Version 2.0.1.1
