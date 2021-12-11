@@ -1881,11 +1881,12 @@ def Choose_Level():
 
     names = collection.find({"_id": ObjectId(idusr)})
     for namess in names:
-        level2 = namess["level2"]
-        level3 = namess["level3"]
-        level4 = namess["level4"]
-        level5 = namess["level5"]
-        level6 = namess["level6"]
+        level1 = namess["level1"].split()
+        level2 = namess["level2"].split()
+        level3 = namess["level3"].split()
+        level4 = namess["level4"].split()
+        level5 = namess["level5"].split()
+        level6 = namess["level6"].split()
 
     while True:
         ly = 157
@@ -1893,12 +1894,14 @@ def Choose_Level():
             if eventsL.type == pg.QUIT:
                 quit_game()
             posL = pg.mouse.get_pos()
-            if posL[0] < 23 and posL[1] < 23 or posL[0] > 24 and posL[0] < 75 and posL[1] < 24 and posL[1] > -1 or posL[0] > 95 and posL[0] < 145 and posL[1] > 135 and posL[1] < 185 or posL[0] > 184 and posL[0] < 235 and posL[1] > 135 and posL[1] < 185 or posL[0] > 275 and posL[0] < 325 and posL[1] > 135 and posL[1] < 185 or posL[0] > 365 and posL[0] < 415 and posL[1] > 135 and posL[1] < 185 or posL[0] > 455 and posL[0] < 504 and posL[1] > 135 and posL[1] < 185 or posL[0] > 545 and posL[0] < 595 and posL[1] > 135 and posL[1] < 185:
+            if posL[0] < 23 and posL[1] < 23 or posL[0] > 24 and posL[0] < 75 and posL[1] < 24 and posL[1] > -1 or posL[0] > 95 and posL[0] < 145 and posL[1] > 135 and posL[1] < 185 or posL[0] > 184 and posL[0] < 235 and posL[1] > 135 and posL[1] < 185 or posL[0] > 275 and posL[0] < 325 and posL[1] > 135 and posL[1] < 185 or posL[0] > 365 and posL[0] < 415 and posL[1] > 135 and posL[1] < 185 or posL[0] > 455 and posL[0] < 504 and posL[1] > 135 and posL[1] < 185 or posL[0] > 545 and posL[0] < 595 and posL[1] > 135 and posL[1] < 185 or posL[0] > 125 and posL[0] < 143 and posL[1] > 115 and posL[1] < 128 or posL[0] > 215 and posL[0] < 233 and posL[1] > 115 and posL[1] < 128 or posL[0] > 305 and posL[0] < 323 and posL[1] > 115 and posL[1] < 128 or posL[0] > 395 and posL[0] < 413 and posL[1] > 115 and posL[1] < 128 or posL[0] > 485 and posL[0] < 503 and posL[1] > 115 and posL[1] < 128 or posL[0] > 575 and posL[0] < 593 and posL[1] > 115 and posL[1] < 128:
                 pg.mouse.set_cursor(pg.cursors.Cursor(pg.SYSTEM_CURSOR_HAND))
             else:
                 pg.mouse.set_cursor(pg.cursors.Cursor(pg.SYSTEM_CURSOR_ARROW))
             if eventsL.type == pg.MOUSEBUTTONUP:
                 if posL[0] < 23 and posL[1] < 23:
+                    pg.mouse.set_cursor(
+                        pg.cursors.Cursor(pg.SYSTEM_CURSOR_WAIT))
                     menu()
                 if posL[0] > 24 and posL[0] < 75 and posL[1] < 24 and posL[1] > -1:
                     Levels_Help()
@@ -1914,6 +1917,24 @@ def Choose_Level():
                     Level_5()
                 if posL[0] > 545 and posL[0] < 595 and posL[1] > 135 and posL[1] < 185 and levl_6:
                     Level_6()
+                if posL[0] > 125 and posL[0] < 143 and posL[1] > 115 and posL[1] < 128:
+                    messagebox.showinfo("Jump - Level 1 Highscore Info",
+                                        f"Highscore Week : {str(numerize.numerize(int(level1[1])))}\nHighscore All times : {str(numerize.numerize(int(level1[2])))}")
+                if posL[0] > 215 and posL[0] < 233 and posL[1] > 115 and posL[1] < 128:
+                    messagebox.showinfo("Jump - Level 2 Highscore Info",
+                                        f"Highscore Week : {str(numerize.numerize(int(level2[1])))}\nHighscore All times : {str(numerize.numerize(int(level2[2])))}")
+                if posL[0] > 305 and posL[0] < 323 and posL[1] > 115 and posL[1] < 128:
+                    messagebox.showinfo("Jump - Level 3 Highscore Info",
+                                        f"Highscore Week : {str(numerize.numerize(int(level3[1])))}\nHighscore All times : {str(numerize.numerize(int(level3[2])))}")
+                if posL[0] > 395 and posL[0] < 413 and posL[1] > 115 and posL[1] < 128:
+                    messagebox.showinfo("Jump - Level 4 Highscore Info",
+                                        f"Highscore Week : {str(numerize.numerize(int(level4[1])))}\nHighscore All times : {str(numerize.numerize(int(level4[2])))}")
+                if posL[0] > 485 and posL[0] < 503 and posL[1] > 115 and posL[1] < 128:
+                    messagebox.showinfo("Jump - Level 5 Highscore Info",
+                                        f"Highscore Week : {str(numerize.numerize(int(level5[1])))}\nHighscore All times : {str(numerize.numerize(int(level5[2])))}")
+                if posL[0] > 575 and posL[0] < 593 and posL[1] > 115 and posL[1] < 128:
+                    messagebox.showinfo("Jump - Level 6 Highscore Info",
+                                        f"Highscore Week : {str(numerize.numerize(int(level6[1])))}\nHighscore All times : {str(numerize.numerize(int(level6[2])))}")
 
         window.fill((224, 224, 224))
         text_text_level("Choose Level", (0, 0, 0), 220, 40, 50)
@@ -1926,7 +1947,7 @@ def Choose_Level():
         pg.draw.rect(window, (172, 172, 172), (0, 0, 23, 23))
         pg.draw.rect(window, (172, 172, 172), (25, 0, 50, 23))
 
-        if level2:
+        if eval(level2[0]):
             levl_2 = True
             text_text_level("2", (255, 255, 255), 201, 138, 40)
         else:
@@ -1937,7 +1958,7 @@ def Choose_Level():
             pg.draw.rect(window, "white", (lx, ly, 25, 25))
             pg.draw.ellipse(window, "black", (lx+9, ly+9, 7, 7))
             pg.draw.rect(window, "black", (lx+11, ly+14, 3, 5))
-        if level3:
+        if eval(level3[0]):
             levl_3 = True
             text_text_level("3", (255, 255, 255), 291, 138, 40)
         else:
@@ -1948,7 +1969,7 @@ def Choose_Level():
             pg.draw.rect(window, "white", (lx, ly, 25, 25))
             pg.draw.ellipse(window, "black", (lx+9, ly+9, 7, 7))
             pg.draw.rect(window, "black", (lx+11, ly+14, 3, 5))
-        if level4:
+        if eval(level4[0]):
             levl_4 = True
             text_text_level("4", (255, 255, 255), 382, 138, 40)
         else:
@@ -1959,7 +1980,7 @@ def Choose_Level():
             pg.draw.rect(window, "white", (lx, ly, 25, 25))
             pg.draw.ellipse(window, "black", (lx+9, ly+9, 7, 7))
             pg.draw.rect(window, "black", (lx+11, ly+14, 3, 5))
-        if level5:
+        if eval(level5[0]):
             levl_5 = True
             text_text_level("5", (255, 255, 255), 471, 138, 40)
         else:
@@ -1970,7 +1991,7 @@ def Choose_Level():
             pg.draw.rect(window, "white", (lx, ly, 25, 25))
             pg.draw.ellipse(window, "black", (lx+9, ly+9, 7, 7))
             pg.draw.rect(window, "black", (lx+11, ly+14, 3, 5))
-        if level6:
+        if eval(level6[0]):
             levl_6 = True
             text_text_level("6", (255, 255, 255), 562, 138, 40)
         else:
@@ -1981,6 +2002,13 @@ def Choose_Level():
             pg.draw.rect(window, "white", (lx, ly, 25, 25))
             pg.draw.ellipse(window, "black", (lx+9, ly+9, 7, 7))
             pg.draw.rect(window, "black", (lx+11, ly+14, 3, 5))
+
+        text("ⓘ", "black", 128, 110, "segoeuisymbol", 18)
+        text("ⓘ", "black", 218, 110, "segoeuisymbol", 18)
+        text("ⓘ", "black", 308, 110, "segoeuisymbol", 18)
+        text("ⓘ", "black", 398, 110, "segoeuisymbol", 18)
+        text("ⓘ", "black", 488, 110, "segoeuisymbol", 18)
+        text("ⓘ", "black", 578, 110, "segoeuisymbol", 18)
 
         text_text_level("<", (0, 0, 0), 5, -1, 20)
         text("HELP", (0, 0, 0), 30, 2, "times", 16)
@@ -2038,14 +2066,8 @@ def enter_code():
                 messagebox.showinfo(
                     "Code - JUMP", f"Yahoo ! You won {prize} coins.")
                 removing.remove(Code)
-                removing_length = len(removing)
-                if removing_length == 2:
-                    code1, code2 = removing
-                    remaining_codes = str(code1) + " " + str(code2)
-                elif removing_length == 1:
-                    code1 = removing[0]
-                    remaining_codes = code1
-                else:
+                remaining_codes = " ".join(removing)
+                if remaining_codes == "":
                     remaining_codes = "None"
                 collection.find_one_and_update(
                     {"_id": ObjectId(idusr)}, {"$set": {"codes": remaining_codes}})
@@ -2109,11 +2131,17 @@ def enter_code():
                     active_color = (224, 224, 224)
                 if pos[0] > 200 and pos[0] < 500 and pos[1] > 225 and pos[1] < 273:
                     Code = text1+text2+text3+text4+text5+text6
-                    check_code.Enter_code()
+                    if "-" not in Code:
+                        check_code.Enter_code()
+                    else:
+                        messagebox.showwarning("Jump - Code", "Field cannot be empty.")
             if events.type == pg.KEYDOWN:
                 if events.key == pg.K_RETURN:
                     Code = text1+text2+text3+text4+text5+text6
-                    check_code.Enter_code()
+                    if "-" not in Code:
+                        check_code.Enter_code()
+                    else:
+                        messagebox.showwarning("Jump - Code", "Field cannot be empty.")
                 key_pressed = pg.key.name(events.key)
                 if active:
                     if key_pressed in nums_only or key_pressed in alphabets:
@@ -2422,7 +2450,8 @@ def leaderboard_week():
             "thursday": 3, "friday": 4, "saturday": 5, "sunday": 6}
     date = 7 - days[day_today]
     # day_today = calendar.day_name[date.weekday()]
-    list_of_top_players = list(collection.find().sort("highscore", DESCENDING))
+    list_of_top_players = list(collection.find().sort(
+        "highscore_All_times", DESCENDING))
     current_user_rank = next((index for (index, d) in enumerate(
         list_of_top_players) if d["name"] == MainName), None)+1
 
@@ -2640,10 +2669,12 @@ def leaderboard_all_Times():
     names = collection.find({"_id": ObjectId(idusr)})
     for namess in names:
         current_user_name = namess["name"]
-        current_user_highscore = str(numerize.numerize(namess["highscore"]))
+        current_user_highscore = str(
+            numerize.numerize(namess["highscore_All_times"]))
         rank_leaderboard_alltime = namess["rank_all_time"]
     clock = pg.time.Clock()
-    list_of_top_players = list(collection.find().sort("highscore", DESCENDING))
+    list_of_top_players = list(collection.find().sort(
+        "highscore_All_times", DESCENDING))
     current_user_rank = next((index for (index, d) in enumerate(
         list_of_top_players) if d["name"] == MainName), None)+1
 
@@ -2689,52 +2720,52 @@ def leaderboard_all_Times():
         name10 = "None"
     try:
         Highscore_1 = str(numerize.numerize(
-            int(list_of_top_players[0]["highscore"])))
+            int(list_of_top_players[0]["highscore_All_times"])))
     except IndexError:
         Highscore_1 = "-:-"
     try:
         Highscore_2 = str(numerize.numerize(
-            int(list_of_top_players[1]["highscore"])))
+            int(list_of_top_players[1]["highscore_All_times"])))
     except IndexError:
         Highscore_2 = "-:-"
     try:
         Highscore_3 = str(numerize.numerize(
-            int(list_of_top_players[2]["highscore"])))
+            int(list_of_top_players[2]["highscore_All_times"])))
     except IndexError:
         Highscore_3 = "-:-"
     try:
         Highscore_4 = str(numerize.numerize(
-            int(list_of_top_players[3]["highscore"])))
+            int(list_of_top_players[3]["highscore_All_times"])))
     except IndexError:
         Highscore_4 = "-:-"
     try:
         Highscore_5 = str(numerize.numerize(
-            int(list_of_top_players[4]["highscore"])))
+            int(list_of_top_players[4]["highscore_All_times"])))
     except IndexError:
         Highscore_5 = "-:-"
     try:
         Highscore_6 = str(numerize.numerize(
-            int(list_of_top_players[5]["highscore"])))
+            int(list_of_top_players[5]["highscore_All_times"])))
     except IndexError:
         Highscore_6 = "-:-"
     try:
         Highscore_7 = str(numerize.numerize(
-            int(list_of_top_players[6]["highscore"])))
+            int(list_of_top_players[6]["highscore_All_times"])))
     except IndexError:
         Highscore_7 = "-:-"
     try:
         Highscore_8 = str(numerize.numerize(
-            int(list_of_top_players[7]["highscore"])))
+            int(list_of_top_players[7]["highscore_All_times"])))
     except IndexError:
         Highscore_8 = "-:-"
     try:
         Highscore_9 = str(numerize.numerize(
-            int(list_of_top_players[8]["highscore"])))
+            int(list_of_top_players[8]["highscore_All_times"])))
     except IndexError:
         Highscore_9 = "-:-"
     try:
         Highscore_10 = str(numerize.numerize(
-            int(list_of_top_players[9]["highscore"])))
+            int(list_of_top_players[9]["highscore_All_times"])))
     except IndexError:
         Highscore_10 = "-:-"
 
@@ -3076,10 +3107,12 @@ def account_settings(email, uname):
                     messagebox.askretrycancel(
                         "Jump - Account Settings", "Account with this username already exist, please try again !")
                 if name not in current_name_list_fromDB:
-                    collection.find_one_and_update({"_id": ObjectId(idusr)}, {"$set": {"name": name}})
+                    collection.find_one_and_update({"_id": ObjectId(idusr)}, {
+                                                   "$set": {"name": name}})
                     changed_name = 1
             if "-" not in paswd2:
-                collection.find_one_and_update({"_id": ObjectId(idusr)}, {"$set": {"password": paswd2}})
+                collection.find_one_and_update({"_id": ObjectId(idusr)}, {
+                                               "$set": {"password": paswd2}})
                 changed_pass = 1
         elif paswd1 != Mainpass:
             messagebox.showerror("Jump - Account Settings",
@@ -3095,7 +3128,7 @@ def account_settings(email, uname):
             message["From"] = sender_email
             message["To"] = receiver_email
 
-            ## Create the plain-text and HTML version of your message
+            # Create the plain-text and HTML version of your message
             text = f"""\
             Hi {uname},
             Your accounts username was changed to {name}.
@@ -3116,23 +3149,23 @@ def account_settings(email, uname):
               </body>
             </html>"""
 
-            ## Turn these into plain/html MIMEText objects
+            # Turn these into plain/html MIMEText objects
             part1 = MIMEText(str(text), "plain")
             part2 = MIMEText(html, "html")
 
-            ## Add HTML/plain-text parts to MIMEMultipart message
-            ## The email client will try to render the last part first
+            # Add HTML/plain-text parts to MIMEMultipart message
+            # The email client will try to render the last part first
             message.attach(part1)
             message.attach(part2)
 
-            ## Create secure connection with server and send email
+            # Create secure connection with server and send email
             context = ssl.create_default_context()
             with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
                 server.login(sender_email, password)
                 server.sendmail(
                     sender_email, receiver_email, message.as_string()
                 )
-                
+
         if changed_pass == 1:
             sender_email = "aayanjump@gmail.com"
             receiver_email = email
@@ -3143,7 +3176,7 @@ def account_settings(email, uname):
             message["From"] = sender_email
             message["To"] = receiver_email
 
-            ## Create the plain-text and HTML version of your message
+            # Create the plain-text and HTML version of your message
             text = f"""\
             Hi {uname},
             Your accounts password was changed.
@@ -3164,16 +3197,16 @@ def account_settings(email, uname):
               </body>
             </html>"""
 
-            ## Turn these into plain/html MIMEText objects
+            # Turn these into plain/html MIMEText objects
             part1 = MIMEText(str(text), "plain")
             part2 = MIMEText(html, "html")
 
-            ## Add HTML/plain-text parts to MIMEMultipart message
-            ## The email client will try to render the last part first
+            # Add HTML/plain-text parts to MIMEMultipart message
+            # The email client will try to render the last part first
             message.attach(part1)
             message.attach(part2)
 
-            ## Create secure connection with server and send email
+            # Create secure connection with server and send email
             context = ssl.create_default_context()
             with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
                 server.login(sender_email, password)
@@ -3181,8 +3214,10 @@ def account_settings(email, uname):
                     sender_email, receiver_email, message.as_string()
                 )
 
-        messagebox.showinfo("Jump - Account Settings", "Accounts credentials changed successfully.")
-
+        pg.mouse.set_cursor(pg.cursors.Cursor(pg.SYSTEM_CURSOR_ARROW))
+        messagebox.showinfo("Jump - Account Settings",
+                            "Accounts credentials changed successfully.")
+        menu()
 
     class Entry_Name:
         def __init__(self, x, y, w, h, color):
@@ -3349,15 +3384,18 @@ def account_settings(email, uname):
                 if pos[0] > 25 and pos[1] > -1 and pos[0] < 48 and pos[1] < 24:
                     messagebox.showinfo("Jump - Account Settings", "Change Username :-\nInorder to change your username, you need to enter your old password plus new username.\n\nChange password :-\nInorder to change your password enter old password plus new password leaving.\n\nChange Email :-\nInorder to change your email address please contact Jump Support.\n\nNote : Username and password can be changed simultaneously, however you can leave new password feild empty.")
                 if pos[0] > 197 and pos[1] > 337 and pos[0] < 301 and pos[1] < 356:
-                    asktoleaveandresetpassword = messagebox.askokcancel("Jump - Log Out", "If you want to reset your password we first need to log you out from this account !")
+                    asktoleaveandresetpassword = messagebox.askokcancel(
+                        "Jump - Log Out", "If you want to reset your password we first need to log you out from this account !")
                     if asktoleaveandresetpassword:
-                        pg.mouse.set_cursor(pg.cursors.Cursor(pg.SYSTEM_CURSOR_WAIT))
+                        pg.mouse.set_cursor(
+                            pg.cursors.Cursor(pg.SYSTEM_CURSOR_WAIT))
                         pickle.dump("none", open(UserNameSavedFile, "wb"))
                         # Make player offline after logging out of Account
                         names = collection.find({"_id": ObjectId(idusr)})
                         for namess in names:
                             status = namess["online"]
-                        collection.find_one_and_update({"_id": ObjectId(idusr)}, {"$set": {"online": False}})
+                        collection.find_one_and_update({"_id": ObjectId(idusr)}, {
+                                                       "$set": {"online": False}})
                         forgot_pass()
                 if pos[0] > 206 and pos[0] < 492 and pos[1] > 94 and pos[1] < 134:
                     activea = True
@@ -3381,14 +3419,14 @@ def account_settings(email, uname):
                     if "-" not in name and "-" not in old_pass:
                         check_login(name, old_pass, new_pass)
                     else:
-                        messagebox.showinfo(
+                        messagebox.showwarrning(
                             "Jump - Account Settings", f"Fields cannot contain spaces.")
             if events.type == pg.KEYDOWN:
                 if events.key == pg.K_RETURN:
                     if "-" not in name and "-" not in old_pass:
                         check_login(name, old_pass, new_pass)
                     else:
-                        messagebox.showinfo(
+                        messagebox.showwarrning(
                             "Jump - Account Settings", f"Fields cannot contain spaces.")
                 key_pressed = pg.key.name(events.key)
                 bullets = "\u2022"
@@ -3606,6 +3644,7 @@ def account_settings(email, uname):
              5, screen_h-21, "segoeuisymbol", 13)
         pg.display.update()
 
+
 def profile(own_or_other, id_of_user):
     if own_or_other == "own":
         global ProfileImageFile
@@ -3623,7 +3662,7 @@ def profile(own_or_other, id_of_user):
             MainName = namess["name"]
             MainEmail = namess["email"]
             Available_coins = str(numerize.numerize(int(namess["coins"])))
-            MainScore = numerize.numerize(namess["highscore"])
+            MainScore = numerize.numerize(namess["highscore_All_times"])
             rank_leaderboard_alltime = namess["rank_all_time"]
             if rank_leaderboard_alltime == 0:
                 rank_leaderboard_alltime = "None"
@@ -3669,7 +3708,8 @@ def profile(own_or_other, id_of_user):
                         names = collection.find({"_id": ObjectId(idusr)})
                         for namess in names:
                             status = namess["online"]
-                        collection.find_one_and_update({"_id": ObjectId(idusr)}, {"$set": {"online": False}})
+                        collection.find_one_and_update({"_id": ObjectId(idusr)}, {
+                                                       "$set": {"online": False}})
                         Log_In()
                     if pos[0] > 85 and pos[1] > 74 and pos[0] < 166 and pos[1] < 95:
                         account_settings(MainEmail, MainName)
@@ -3762,7 +3802,7 @@ def profile(own_or_other, id_of_user):
         for otherss in Others:
             OtherName = otherss["name"]
             Other_coins = str(numerize.numerize(int(otherss["coins"])))
-            OtherScore = str(numerize.numerize(otherss["highscore"]))
+            OtherScore = str(numerize.numerize(otherss["highscore_All_times"]))
             rank_leaderboard_alltime = otherss["rank_all_time"]
             player_likes = otherss["likes"]
             player_likes_show = numerize.numerize(otherss["likes"])
@@ -3892,7 +3932,6 @@ def menu():
     global date
     global idusr
     global MainName
-    global MainScore
     global Available_coins
     global date_player_joined_jump
     black = (0, 0, 0)
@@ -3920,15 +3959,34 @@ def menu():
     names = collection.find({"_id": ObjectId(idusr)})
     for namess in names:
         MainName = namess["name"]
-        MainScore = str(numerize.numerize(namess["highscore"]))
+        MainScore = namess["highscore_All_times"]
+        MainScore_week = namess["highscore_week"]
         Available_coins = str(numerize.numerize(int(namess["coins"])))
-        status = namess["online"]
         account_banned_not = namess["banned"]
+        status = namess["online"]
         show_message = namess["show_message"]
         date_player_joined_jump = namess["date_joined"]
+        level1 = namess["level1"].split()
+        level2 = namess["level2"].split()
+        level3 = namess["level3"].split()
+        level4 = namess["level4"].split()
+        level5 = namess["level5"].split()
+        level6 = namess["level6"].split()
+        Sum_Score_week = int(level1[1]) + int(level2[1]) + int(level3[1]) + \
+            int(level4[1]) + int(level5[1]) + int(level6[1])
+        Sum_Score_Alltime = int(level1[2]) + int(level2[2]) + int(
+            level3[2]) + int(level4[2]) + int(level5[2]) + int(level6[2])
 
-    collection.find_one_and_update(
-        {"_id": ObjectId(idusr)}, {"$set": {"online": True}})  # True if user is playing
+    if MainScore_week < Sum_Score_week:
+        collection.find_one_and_update({"_id": ObjectId(idusr)}, {
+                                       "$set": {"highscore_week": Sum_Score_week}})  # Total Highsocre ( Week )
+    if MainScore < Sum_Score_Alltime:
+        collection.find_one_and_update({"_id": ObjectId(idusr)}, {"$set": {
+                                       "highscore_All_times": Sum_Score_Alltime}})  # Total Highsocre ( All Times )
+
+    if not status:
+        collection.find_one_and_update(
+            {"_id": ObjectId(idusr)}, {"$set": {"online": True}})  # True if user is playing
 
     while True:
         if not os.path.isfile(ProfileImageFile):
@@ -3952,6 +4010,8 @@ def menu():
                 if pos[0] > 251 and pos[0] < 451 and pos[1] > 149 and pos[1] < 200:
                     Level_1()
                 if pos[0] > 251 and pos[0] < 451 and pos[1] > 220 and pos[1] < 270:
+                    pg.mouse.set_cursor(
+                        pg.cursors.Cursor(pg.SYSTEM_CURSOR_WAIT))
                     Choose_Level()
                 if pos[0] > 251 and pos[0] < 451 and pos[1] > 289 and pos[1] < 340:
                     Options()
@@ -3988,7 +4048,7 @@ def menu():
         window.fill((224, 224, 224))
         add_image(ProfileImageFile, 5, 5, 50, 50)
         Text(f"{MainName}", (30, 30, 30), 60, 3, "comicsansms", 20)
-        Text(f"Score : {str(MainScore)}",
+        Text(f"Score : {str(numerize.numerize(MainScore))}",
              (30, 30, 30), 60, 33, "comicsansms", 15)
         Text(f"Coins : {Available_coins}",
              (30, 30, 30), screen_w-(83+len(Available_coins)*13), 2, "comicsansms", 22)
@@ -4034,12 +4094,13 @@ def sign_up():
                     "codes": "iloveu jumpay aayany",
                     "coins": "0",
                     "email": email,
-                    "highscore": 0,
-                    "level2": False,
-                    "level3": False,
-                    "level4": False,
-                    "level5": False,
-                    "level6": False,
+                    "highscore_All_times": 0,
+                    "level1": "True 0 0",
+                    "level2": "False 0 0",
+                    "level3": "False 0 0",
+                    "level4": "False 0 0",
+                    "level5": "False 0 0",
+                    "level6": "False 0 0",
                     "skin2": False,
                     "skin3": False,
                     "skin4": False,
@@ -4266,10 +4327,10 @@ def sign_up():
                         if "-" not in name and "-" not in password:
                             check_login(email, name, password)
                         else:
-                            messagebox.showinfo(
+                            messagebox.showwarrning(
                                 "Jump - Log In", f"Fields cannot contain spaces.")
                     else:
-                        messagebox.showinfo(
+                        messagebox.showerror(
                             "Jump - Log In", f"Invalid Email Address !")
             if events.type == pg.KEYDOWN:
                 if events.key == pg.K_RETURN:
@@ -4277,10 +4338,10 @@ def sign_up():
                         if "-" not in name and "-" not in password:
                             check_login(email, name, password)
                         else:
-                            messagebox.showinfo(
+                            messagebox.showwarrning(
                                 "Jump - Log In", f"Fields cannot contain spaces.")
                     else:
-                        messagebox.showinfo(
+                        messagebox.showerror(
                             "Jump - Log In", f"Invalid Email Address !")
                 key_pressed = pg.key.name(events.key)
                 if events.key == pg.K_2 and pg.key.get_mods() & pg.KMOD_SHIFT:
@@ -5063,7 +5124,7 @@ def enter_6digitCode(uname, email_to_show):
                     asktoleaveforgotpass = messagebox.askquestion(
                         "Jump - Reset Password", "Are you sure you want to go back ?")
                     if asktoleaveforgotpass:
-                        print("Log_In()")
+                        Log_In()
                 if pos[0] > 198 and pos[0] < 312 and pos[1] > 281 and pos[1] < 302:
                     asktosendcodeagain = messagebox.askquestion(
                         "Jump - Send Code again", "Do you want to get code again ?")
@@ -5477,7 +5538,7 @@ def Log_In():
                     if "-" not in name and "-" not in password:
                         check_login(name, password)
                     else:
-                        messagebox.showinfo(
+                        messagebox.showwarrning(
                             "Jump - Log In", f"Fields cannot contain spaces. ")
             if events.type == pg.KEYDOWN:
                 if events.key == pg.K_RETURN:
@@ -5487,7 +5548,7 @@ def Log_In():
                     if "-" not in name and "-" not in password:
                         check_login(name, password)
                     else:
-                        messagebox.showinfo(
+                        messagebox.showwarrning(
                             "Jump - Log In", f"Fields cannot contain spaces. ")
                 key_pressed = pg.key.name(events.key)
                 if activea:
@@ -5624,7 +5685,8 @@ def Start_Screen():
     try:
         logedinornot = pickle.load(open(UserNameSavedFile, "rb"))
     except Exception:
-        messagebox.showerror("Jump - Login Error", "There was some error while retrieving data.\nYou need to login again.")
+        messagebox.showerror(
+            "Jump - Login Error", "There was some error while retrieving data.\nYou need to login again.")
         os.remove(UserNameSavedFile)
         pickle.dump("none", open(UserNameSavedFile, "wb"))
         logedinornot = pickle.load(open(UserNameSavedFile, "rb"))
@@ -5655,8 +5717,8 @@ def Start_Screen():
             color = 0
             if perform:
                 # try:
-                # Old Database ( DEPRECIATED ) # cluster = MongoClient('mongodb+srv://Aayan_Yasin:A10485766a@cluster0.hge2w.mongodb.net/Jump?retryWrites=true&w=majority')
-                cluster = MongoClient('mongodb+srv://aayanyasin:A10485766a@cluster0.ez9nx.mongodb.net/Jump?retryWrites=true&w=majority')
+                cluster = MongoClient(
+                    'mongodb+srv://aayanyasin:A10485766a@cluster0.ez9nx.mongodb.net/Jump?retryWrites=true&w=majority')
                 db = cluster["Jump"]
                 collection = db["Leader Board"]
                 if logedinornot == "none":
