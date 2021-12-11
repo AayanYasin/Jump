@@ -1,10 +1,12 @@
-Terms and Conditions
 [InternetShortcut]
 URL=https://github.com/AayanYasin/Jump/blob/main/Readme.txt
 
+
+Terms and Conditions:
+
 All rights of this game are owned by Aayan Yasin and any unlawful or illegal act with orignal files would count under cyber crime. No major changes to be made without the concern of owner. Contact if you have found a bug or need any help. Do provide us feedback with some ideas to make JUMP better and fun for everyone.
 
-FAQ
+FAQ:
 
 Why do we need your email ?
 ....
