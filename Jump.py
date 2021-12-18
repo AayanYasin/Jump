@@ -6,6 +6,7 @@ import sys
 from tkinter import *
 from tkinter import messagebox, filedialog
 import shutil
+import time as t
 import webbrowser as wb
 from bs4 import BeautifulSoup
 from urllib.request import Request, urlopen
@@ -27,7 +28,7 @@ root.wm_withdraw()
 musicFile = "assets\\background.mp3"
 UserNameSavedFile = "assets\\UserCreds.dat"
 IconFile = "assets\JUMP-ICON.png"
-ProfileImageFile = "assets\PROFILE-IMAGE.png"
+# ProfileImageFile = "assets\PROFILE-IMAGE.png"
 
 screen_w = 700
 screen_h = 400
@@ -130,36 +131,114 @@ def Game_over():
     NorF_x = 383
     NorF = None
 
-    # with open(coinsFile)as coinsChange:
-    #     currentC = int(coinsChange.read())
-    #     coinsChange.close()
-
-    # with open(coinsFile, "w")as coinsChange2:
-    #     New_coins = str(currentC+coinCollected)
-    #     coinsChange2.write(New_coins)
-    #     coinsChange2.close()
+    SCORE = ((coinCollected+time)//2)
+    idusr = pickle.load(open(UserNameSavedFile, "rb"))
+    data_of_user = collection.find({"_id": ObjectId(idusr)})
+    for data in data_of_user:
+        currentC = data["coins"]
+        Level1 = data["level1"].split()
+        Level2 = data["level2"].split()
+        Level3 = data["level3"].split()
+        Level4 = data["level4"].split()
+        Level5 = data["level5"].split()
+        Level6 = data["level6"].split()
 
     def text_screen_Go(text, color, x, y, family, size):
         font2 = pg.font.SysFont(family, size)
         set_text2 = font2.render(text, True, color)
         window.blit(set_text2, (x, y))
 
-    def level_unlock_gameover(level_to_unlock):
-        with open("data/levels.txt") as f:
-            levels_unlocked1 = f.read()
-            levels_unlocked1 = levels_unlocked1.replace(",", " ")
-            levels_unlocked1 = levels_unlocked1.split()
-        if str(level_to_unlock) not in levels_unlocked1:
-            with open("data/levels.txt", "a") as f:
-                f.write(f",{level_to_unlock}")
+    def level_unlock_gameover(Current_Levelw):
+        pg.mouse.set_cursor(pg.cursors.Cursor(pg.SYSTEM_CURSOR_WAIT))
+        match Current_Levelw:
+            case 1:
+                current_l = "level1"
+            case 2:
+                current_l = "level2"
+            case 3:
+                current_l = "level3"
+            case 4:
+                current_l = "level4"
+            case 5:
+                current_l = "level5"
+            case 6:
+                current_l = "level6"
+
+        if Current_Level == 1:
+            if int(Level1[1]) < int(SCORE):
+                new_score_week = SCORE
+            else:
+                new_score_week = Level1[1]
+            if int(Level1[2]) < int(SCORE):
+                new_score_alltimes = SCORE
+            else:
+                new_score_alltimes = Level1[2]
+        if Current_Level == 2:
+            if int(Level2[1]) < int(SCORE):
+                new_score_week = SCORE
+            else:
+                new_score_week = Level2[1]
+            if int(Level2[2]) < int(SCORE):
+                new_score_alltimes = SCORE
+            else:
+                new_score_alltimes = Level2[2]
+        if Current_Level == 3:
+            if int(Level3[1]) < int(SCORE):
+                new_score_week = SCORE
+            else:
+                new_score_week = Level3[1]
+            if int(Level3[2]) < int(SCORE):
+                new_score_alltimes = SCORE
+            else:
+                new_score_alltimes = Level3[2]
+        if Current_Level == 4:
+            if int(Level4[1]) < int(SCORE):
+                new_score_week = SCORE
+            else:
+                new_score_week = Level4[1]
+            if int(Level4[2]) < int(SCORE):
+                new_score_alltimes = SCORE
+            else:
+                new_score_alltimes = Level4[2]
+        if Current_Level == 5:
+            if int(Level5[1]) < int(SCORE):
+                new_score_week = SCORE
+            else:
+                new_score_week = Level5[1]
+            if int(Level5[2]) < int(SCORE):
+                new_score_alltimes = SCORE
+            else:
+                new_score_alltimes = Level5[2]
+        if Current_Level == 6:
+            if int(Level6[1]) < int(SCORE):
+                new_score_week = SCORE
+            else:
+                new_score_week = Level6[1]
+            if int(Level6[2]) < int(SCORE):
+                new_score_alltimes = SCORE
+            else:
+                new_score_alltimes = Level6[2]
+
+        collection.find_one_and_update({"_id": ObjectId(idusr)}, {
+                                       "$set": {current_l: f"True {new_score_week} {new_score_alltimes}"}})
+        collection.find_one_and_update({"_id": ObjectId(idusr)}, {
+                                       "$set": {"coins": str(int(currentC)+int(coinCollected))}})
 
     while go:
         for eventsGO in pg.event.get():
             pos = pg.mouse.get_pos()
             if eventsGO.type == pg.QUIT:
                 quit_game()
+            if pos[0] < 23 and pos[1] < 23 or pos[0] > 250 and pos[0] < 360 and pos[1] > 295 and pos[1] < 345 or pos[0] > 312 and pos[0] < 452 and pos[1] > 295 and pos[1] < 345:
+                pg.mouse.set_cursor(pg.cursors.Cursor(pg.SYSTEM_CURSOR_HAND))
+            else:
+                pg.mouse.set_cursor(pg.cursors.Cursor(pg.SYSTEM_CURSOR_ARROW))
             if eventsGO.type == pg.MOUSEBUTTONUP:
                 if pos[0] > 250 and pos[0] < 360 and pos[1] > 295 and pos[1] < 345:
+                    pg.mouse.set_cursor(
+                        pg.cursors.Cursor(pg.SYSTEM_CURSOR_WAIT))
+                    collection.find_one_and_update({"_id": ObjectId(idusr)}, {
+                                                   "$set": {"coins": str(int(currentC)+int(coinCollected))}})
                     Play_Again()
                 if pos[0] < 23 and pos[1] < 23:
                     menu()
@@ -201,14 +280,13 @@ def Game_over():
 
         text_screen_Go(u"\u2302", black, 5, 0, "segoeuisymbol", 15)
         text_screen_Go("Game Over", black, 240, 40, "areal", 57)
-        # text_screen_Go(
-        #     f"Score : {SCORE}", white, 282, 112, "serif", 32)
+        text_screen_Go(f"Score : {SCORE}", white, 282, 112, "serif", 32)
         text_screen_Go(f"Time : {time}", white, 287, 173, "serif", 32)
         text_screen_Go(f"Coins : {coinCollected}",
                        white, 288, 233, "serif", 32)
         text_screen_Go("RESTART", white, 256, 307, "helvetica", 25)
         text_screen_Go(NorF, white, NorF_x, 307, "helvetica", 25)
-        pg.display.update()
+        pg.display.flip()
 
 
 def pause(crnt_lvl):
@@ -338,14 +416,15 @@ def Level_1():
                     V_Y = jump
                 # For Mobile -- Click Sensors
             posMain = pg.mouse.get_pos()
+            if posMain[0] > 660 and posMain[1] > 380 and posMain[0] < 677 and posMain[1] < screen_h or posMain[0] > 678 and posMain[1] > 380 and posMain[0] < screen_w and posMain[1] < screen_h:
+                pg.mouse.set_cursor(pg.cursors.Cursor(pg.SYSTEM_CURSOR_HAND))
+            else:
+                pg.mouse.set_cursor(pg.cursors.Cursor(pg.SYSTEM_CURSOR_ARROW))
             if events.type == pg.MOUSEBUTTONUP:
                 if posMain[0] > 660 and posMain[1] > 380 and posMain[0] < 677 and posMain[1] < screen_h:
                     pause(1)
                 if posMain[0] > 678 and posMain[1] > 380 and posMain[0] < screen_w and posMain[1] < screen_h:
                     restart(1)
-                if posMain[1] > 300:
-                    P_height = 30
-                    P_Y = 270
             if events.type == pg.KEYDOWN:
                 if events.key == K_RIGHT or events.key == K_d:
                     G_MOVE = 5
@@ -559,22 +638,15 @@ def Level_2():
                     V_X = 0
                 # For Mobile -- Click Sensors
             posMain = pg.mouse.get_pos()
+            if posMain[0] > 660 and posMain[1] > 380 and posMain[0] < 677 and posMain[1] < screen_h or posMain[0] > 678 and posMain[1] > 380 and posMain[0] < screen_w and posMain[1] < screen_h:
+                pg.mouse.set_cursor(pg.cursors.Cursor(pg.SYSTEM_CURSOR_HAND))
+            else:
+                pg.mouse.set_cursor(pg.cursors.Cursor(pg.SYSTEM_CURSOR_ARROW))
             if events.type == pg.MOUSEBUTTONDOWN:
                 if posMain[0] > 660 and posMain[1] > 380 and posMain[0] < 677 and posMain[1] < screen_h:
                     pause(2)
                 if posMain[0] > 678 and posMain[1] > 380 and posMain[0] < screen_w and posMain[1] < screen_h:
                     restart(2)
-                if posMain[0] > 350 and posMain[1] > 300:
-                    V_X = move_f
-                if posMain[0] < 350 and posMain[1] > 300:
-                    V_X = move_b
-                if posMain[1] < 300:
-                    V_Y = jump
-            if events.type == pg.MOUSEBUTTONUP:
-                if posMain[0] > 350 and posMain[1] > 300:
-                    V_X = 0
-                if posMain[0] < 350 and posMain[1] > 300:
-                    V_X = 0
 
         if PlayerM.colliderect(ObsticleM):
             gameover = True
@@ -721,8 +793,12 @@ def Level_3():
         for events in pg.event.get():
             if events.type == pg.QUIT:
                 quit_game()
+            pos = pg.mouse.get_pos()
+            if pos[0] > 660 and pos[1] > 380 and pos[0] < 677 and pos[1] < screen_h or pos[0] > 678 and pos[1] > 380 and pos[0] < screen_w and pos[1] < screen_h:
+                pg.mouse.set_cursor(pg.cursors.Cursor(pg.SYSTEM_CURSOR_HAND))
+            else:
+                pg.mouse.set_cursor(pg.cursors.Cursor(pg.SYSTEM_CURSOR_ARROW))
             if events.type == pg.MOUSEBUTTONDOWN:
-                pos = pg.mouse.get_pos()
                 if pos[0] > 660 and pos[1] > 380 and pos[0] < 677 and pos[1] < screen_h:
                     pause(3)
                 if pos[0] > 678 and pos[1] > 380 and pos[0] < screen_w and pos[1] < screen_h:
@@ -966,8 +1042,12 @@ def Level_4():
                 if i.key == K_LEFT or i.key == pg.K_a:
                     LR = -15
                     V_X = 0
+            posMain = pg.mouse.get_pos()
+            if posMain[0] > 660 and posMain[1] > 380 and posMain[0] < 677 and posMain[1] < screen_h or posMain[0] > 678 and posMain[1] > 380 and posMain[0] < screen_w and posMain[1] < screen_h:
+                pg.mouse.set_cursor(pg.cursors.Cursor(pg.SYSTEM_CURSOR_HAND))
+            else:
+                pg.mouse.set_cursor(pg.cursors.Cursor(pg.SYSTEM_CURSOR_ARROW))
             if i.type == pg.MOUSEBUTTONDOWN:
-                posMain = pg.mouse.get_pos()
                 if posMain[0] > 660 and posMain[1] > 380 and posMain[0] < 677 and posMain[1] < screen_h:
                     pause(4)
                 if posMain[0] > 678 and posMain[1] > 380 and posMain[0] < screen_w and posMain[1] < screen_h:
@@ -1229,6 +1309,10 @@ def Level_5():
                     V_y = 0
                 if eventsGO.key == pg.K_DOWN or eventsGO.key == pg.K_s:
                     V_y = 0
+            if pos[0] > 660 and pos[1] > 380 and pos[0] < 677 and pos[1] < screen_h or pos[0] > 678 and pos[1] > 380 and pos[0] < screen_w and pos[1] < screen_h:
+                pg.mouse.set_cursor(pg.cursors.Cursor(pg.SYSTEM_CURSOR_HAND))
+            else:
+                pg.mouse.set_cursor(pg.cursors.Cursor(pg.SYSTEM_CURSOR_ARROW))
             if eventsGO.type == pg.MOUSEBUTTONDOWN:
                 if pos[0] > 660 and pos[1] > 380 and pos[0] < 677 and pos[1] < screen_h:
                     pause(5)
@@ -1588,6 +1672,10 @@ def Level_6():
                 if i.key == pg.K_LEFT or i.key == pg.K_a:
                     LR = -15
                     V_X = 0
+            if pos[0] > 660 and pos[1] > 380 and pos[0] < 677 and pos[1] < screen_h or pos[0] > 678 and pos[1] > 380 and pos[0] < screen_w and pos[1] < screen_h:
+                pg.mouse.set_cursor(pg.cursors.Cursor(pg.SYSTEM_CURSOR_HAND))
+            else:
+                pg.mouse.set_cursor(pg.cursors.Cursor(pg.SYSTEM_CURSOR_ARROW))
             if i.type == pg.MOUSEBUTTONDOWN:
                 if pos[0] > 660 and pos[1] > 380 and pos[0] < 677 and pos[1] < screen_h:
                     pause(6)
@@ -2134,14 +2222,16 @@ def enter_code():
                     if "-" not in Code:
                         check_code.Enter_code()
                     else:
-                        messagebox.showwarning("Jump - Code", "Field cannot be empty.")
+                        messagebox.showwarning(
+                            "Jump - Code", "Field cannot be empty.")
             if events.type == pg.KEYDOWN:
                 if events.key == pg.K_RETURN:
                     Code = text1+text2+text3+text4+text5+text6
                     if "-" not in Code:
                         check_code.Enter_code()
                     else:
-                        messagebox.showwarning("Jump - Code", "Field cannot be empty.")
+                        messagebox.showwarning(
+                            "Jump - Code", "Field cannot be empty.")
                 key_pressed = pg.key.name(events.key)
                 if active:
                     if key_pressed in nums_only or key_pressed in alphabets:
@@ -2960,7 +3050,7 @@ def More():
                 if pos[0] < 23 and pos[1] < 23:
                     Options()
                 if pos[0] > 250 and pos[0] < 450 and pos[1] > 120 and pos[1] < 170 and Option_Click:
-                    friends()
+                    people()
                 if pos[0] > 250 and pos[0] < 450 and pos[1] > 205 and pos[1] < 255 and Option_Click:
                     enter_code()
                 if pos[0] > 250 and pos[0] < 450 and pos[1] > 290 and pos[1] < 340 and Option_Click:
@@ -2976,7 +3066,7 @@ def More():
         if bx2 == 250:
             Vx2 = 0
             Option_Click = True
-        if tx1 > 275:
+        if tx1 > 279:
             Vx3 = 0
             Option_Click = True
         if tx2 < 269:
@@ -2989,15 +3079,174 @@ def More():
         pg.draw.rect(window, (172, 172, 172), (0, 0, 23, 23))
         button.text("<", 5, -1, 20, "black")
         button.text("MORE", (screen_w//2)-62, 30, 50, "black")
-        button.text("F R I E N D S", tx1, ty1, 30, "white")
+        button.text("P E O P L E", tx1, ty1, 30, "white")
         button.text("C . O . D . E", 280, 211, 30, "white")
         button.text("C H A R A C T E R", tx2, ty2, 25, "white")
         pg.display.update()
         clock.tick(30)
 
 
-def friends():
-    pass
+def people():
+    global collection
+
+    class Entry_Code:
+        def __init__(self, x, y, w, h, color):
+            self.x = x
+            self.y = y
+            self.height = h
+            self.width = w
+            self.color = color
+
+        def place_widget(self):
+            pg.draw.rect(window, self.color,
+                         (self.x, self.y, self.width, self.height))
+
+        def place_text(self, text):
+            font = pg.font.SysFont("comicsansms", self.width+self.height)
+            show = font.render(text, True, self.color)
+            window.blit(show, (self.x, self.y))
+
+        def place_text_back(self, text):
+            font = pg.font.SysFont("helvetica", self.width+self.height)
+            show = font.render(text, True, self.color)
+            window.blit(show, (self.x, self.y))
+
+        def draw_rect_for_back(self):
+            pg.draw.rect(window, self.color,
+                         (self.x, self.y, self.width, self.height))
+
+        def Enter_code(self, name):
+            pg.mouse.set_cursor(pg.cursors.Cursor(pg.SYSTEM_CURSOR_WAIT))
+            data = list(collection.find())
+            current_name_list_fromDB = []
+            for users in data:
+                current_name_list_fromDB.append(users["name"])
+            if name in current_name_list_fromDB:
+                data_of_other_user = collection.find({"name": name})
+                for data in data_of_other_user:
+                    id_other = str(data["_id"])
+                    profile("other", id_other)
+            elif name not in current_name_list_fromDB:
+                messagebox.askretrycancel(
+                    "Jump - Log In", "Account with this username doesn't exist, please try again !")
+
+    active_color = (224, 224, 224)
+    entry_title = Entry_Code((screen_w//2)-50, 20, 32, 0, "black")
+    entry1 = Entry_Code(200, 100+55, 300, 55, "black")
+    entry_text1 = Entry_Code(215+35, 104+55, 16, 16, (30, 30, 30))
+    entry_text2 = Entry_Code(245+35, 104+55, 16, 16, (30, 30, 30))
+    entry_text3 = Entry_Code(275+35, 104+55, 16, 16, (30, 30, 30))
+    entry_text4 = Entry_Code(305+35, 104+55, 16, 16, (30, 30, 30))
+    entry_text5 = Entry_Code(335+35, 104+55, 16, 16, (30, 30, 30))
+    entry_text6 = Entry_Code(365+35, 104+55, 16, 16, (30, 30, 30))
+    entry_text7 = Entry_Code(395+35, 104+55, 16, 16, (30, 30, 30))
+    button = Entry_Code(200, 200+25, 300, 50, "black")
+    button_text = Entry_Code((screen_w//2)-45, 201.5+25, 16, 16, "white")
+    entry_info = Entry_Code((screen_w//2)-150, 94, 17, 0, (5, 5, 5))
+    buttonBack = Entry_Code(0, 0, 23, 23, (172, 172, 172))
+    buttonBack_text = Entry_Code(5, -1, 10, 10, "black")
+    check_code = Entry_Code(None, None, None, None, None)
+    nums_only = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
+    alphabets = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l',
+                 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z']
+    active = False
+    word = 1
+    text1 = "-"
+    text2 = "-"
+    text3 = "-"
+    text4 = "-"
+    text5 = "-"
+    text6 = "-"
+    text7 = "-"
+
+    while True:
+        window.fill((224, 224, 224))
+        entry2 = Entry_Code(206, 107+55, 288, 40, active_color)
+        for events in pg.event.get():
+            pos = pg.mouse.get_pos()
+            if events.type == pg.QUIT:
+                sys.exit()
+            if pos[0] > 206 and pos[0] < 495 and pos[1] > 162 and pos[1] < 201:
+                pg.mouse.set_cursor(
+                    pg.cursors.Cursor(pg.SYSTEM_CURSOR_IBEAM))
+            elif pos[0] < 23 and pos[1] < 23 or pos[0] > 200 and pos[0] < 500 and pos[1] > 225 and pos[1] < 273:
+                pg.mouse.set_cursor(
+                    pg.cursors.Cursor(pg.SYSTEM_CURSOR_HAND))
+            else:
+                pg.mouse.set_cursor(
+                    pg.cursors.Cursor(pg.SYSTEM_CURSOR_ARROW))
+            if events.type == pg.MOUSEBUTTONDOWN:
+                if pos[0] < 23 and pos[1] < 23:
+                    More()
+                if pos[0] > 206 and pos[0] < 495 and pos[1] > 162 and pos[1] < 201:
+                    active = True
+                    active_color = "white"
+                else:
+                    active = False
+                    active_color = (224, 224, 224)
+                if pos[0] > 200 and pos[0] < 500 and pos[1] > 225 and pos[1] < 273:
+                    name = text1+text2+text3+text4+text5+text6+text7
+                    check_code.Enter_code(name=name)
+            if events.type == pg.KEYDOWN:
+                if events.key == pg.K_RETURN:
+                    name = text1+text2+text3+text4+text5+text6+text7
+                    check_code.Enter_code(name=name)
+                key_pressed = pg.key.name(events.key)
+                if active:
+                    if key_pressed in nums_only or key_pressed in alphabets:
+                        if word == 1:
+                            text1 = key_pressed
+                        elif word == 2:
+                            text2 = key_pressed
+                        elif word == 3:
+                            text3 = key_pressed
+                        elif word == 4:
+                            text4 = key_pressed
+                        elif word == 5:
+                            text5 = key_pressed
+                        elif word == 6:
+                            text6 = key_pressed
+                        elif word == 7:
+                            text7 = key_pressed
+                        word += 1
+                        if word > 7:
+                            word = 8
+                    if key_pressed == "backspace":
+                        if word == 2:
+                            text1 = "-"
+                        elif word == 3:
+                            text2 = "-"
+                        elif word == 4:
+                            text3 = "-"
+                        elif word == 5:
+                            text4 = "-"
+                        elif word == 6:
+                            text5 = "-"
+                        elif word == 7:
+                            text6 = "-"
+                        elif word == 8:
+                            text7 = "-"
+                        word -= 1
+                        if word < 1:
+                            word = 1
+
+        entry_title.place_text("People")
+        entry1.place_widget()
+        entry2.place_widget()
+        entry_text1.place_text(text1)
+        entry_text2.place_text(text2)
+        entry_text3.place_text(text3)
+        entry_text4.place_text(text4)
+        entry_text5.place_text(text5)
+        entry_text6.place_text(text6)
+        entry_text7.place_text(text7)
+        button.place_widget()
+        button_text.place_text("Search")
+        entry_info.place_text(
+            f"Enter username to search for account !")
+        buttonBack.draw_rect_for_back()
+        buttonBack_text.place_text_back("<")
+        pg.display.update()
 
 
 btmClick = 420
@@ -3647,15 +3896,17 @@ def account_settings(email, uname):
 
 def profile(own_or_other, id_of_user):
     if own_or_other == "own":
-        global ProfileImageFile
+        global IconFile
 
-        def change_profile_pic():
-            original = filedialog.askopenfilename(
-                filetypes=[("All Files", ("*.jpg", "*.jpeg", "*.png"))])
-            if not original:
-                return
-            target = os.getcwd()+"\\assets\PROFILE-IMAGE.png"
-            shutil.copyfile(original, target)
+        #### Depressiated probabbly would show up next update ####
+        # def change_profile_pic():
+        #     original = filedialog.askopenfilename(
+        #         filetypes=[("All Files", ("*.jpg", "*.jpeg", "*.png"))])
+        #     if not original:
+        #         return
+        #     target = os.getcwd()+"\\assets\PROFILE-IMAGE.png"
+        #     shutil.copyfile(original, target)
+        ###########################################################
 
         names = collection.find({"_id": ObjectId(idusr)})
         for namess in names:
@@ -3689,7 +3940,7 @@ def profile(own_or_other, id_of_user):
                 pos = pg.mouse.get_pos()
                 if events2.type == pg.QUIT:
                     quit_game()
-                if pos[0] < 23 and pos[1] < 23 or pos[0] > 623 and pos[1] < 23 or pos[0] > 85 and pos[1] > 74 and pos[0] < 166 and pos[1] < 95 or pos[0] > 60 and pos[1] > 30 and pos[0] < 75 and pos[1] < 47 or pos[0] > 178 and pos[1] > 41 and pos[0] < 202 and pos[1] < 61:
+                if pos[0] < 23 and pos[1] < 23 or pos[0] > 623 and pos[1] < 23 or pos[0] > 85 and pos[1] > 74 and pos[0] < 166 and pos[1] < 95 or pos[0] > 178 and pos[1] > 41 and pos[0] < 202 and pos[1] < 61:
                     pg.mouse.set_cursor(
                         pg.cursors.Cursor(pg.SYSTEM_CURSOR_HAND))
                 else:
@@ -3713,16 +3964,14 @@ def profile(own_or_other, id_of_user):
                         Log_In()
                     if pos[0] > 85 and pos[1] > 74 and pos[0] < 166 and pos[1] < 95:
                         account_settings(MainEmail, MainName)
-                    if pos[0] > 60 and pos[1] > 30 and pos[0] < 75 and pos[1] < 47:
-                        change_profile_pic()
+                    # if pos[0] > 60 and pos[1] > 30 and pos[0] < 75 and pos[1] < 47:
+                        # change_profile_pic()
                     if pos[0] > 178 and pos[1] > 41 and pos[0] < 202 and pos[1] < 61:
                         pyperclip.copy(MainName)
                         copy_text = "✔"
 
-            if not os.path.isfile(ProfileImageFile):
-                ProfileImageFile = "assets\JUMP-ICON.png"
-            else:
-                ProfileImageFile = "assets\PROFILE-IMAGE.png"
+            if os.path.isfile(IconFile):
+                IconFile = "assets\JUMP-ICON.png"
 
             if sec_1 > 30:
                 Char5 = rd.choice(
@@ -3741,7 +3990,7 @@ def profile(own_or_other, id_of_user):
 
             window.fill((224, 224, 224))
             try:
-                add_image(ProfileImageFile, 5, 30, 70, 70)
+                add_image(IconFile, 5, 30, 70, 70)
             except Exception:
                 pass
             pg.draw.rect(window, (172, 172, 172), (0, 0, 23, 23))
@@ -3755,8 +4004,8 @@ def profile(own_or_other, id_of_user):
             text(f"{player_likes} likes", "black",
                  175, 76, "segoeuisymbol", 12)
             text("Log Out", "black", screen_w-67, 0, "comicsansms", 15)
-            pg.draw.rect(window, (224, 224, 224), (60, 27, 20, 20))
-            text("✎", "black", 63, 25, "segoeuisymbol", 15)
+            # pg.draw.rect(window, (224, 224, 224), (60, 27, 20, 20))
+            # text("✎", "black", 63, 25, "segoeuisymbol", 15)
             text(f"Title : Expert", "black", 10, 150, "comicsansms", 18)
             text(f"Rank : # {rank_leaderboard_alltime}",
                  "black", 10, 200, "comicsansms", 18)
@@ -3841,11 +4090,10 @@ def profile(own_or_other, id_of_user):
                     pg.mouse.set_cursor(
                         pg.cursors.Cursor(pg.SYSTEM_CURSOR_ARROW))
                 if events2.type == pg.MOUSEBUTTONDOWN:
-                    print(pos)
                     if pos[0] < 23 and pos[1] < 23:
                         pg.mouse.set_cursor(
                             pg.cursors.Cursor(pg.SYSTEM_CURSOR_WAIT))
-                        menu()
+                        people()
                     if pos[0] > 85 and pos[1] > 74 and pos[0] < 166 and pos[1] < 95 and like_or_not_tf:
                         pg.mouse.set_cursor(
                             pg.cursors.Cursor(pg.SYSTEM_CURSOR_WAIT))
@@ -3854,7 +4102,7 @@ def profile(own_or_other, id_of_user):
                         pyperclip.copy(OtherName)
                         copy_text = "✔"
 
-            ProfileImageFile = "assets\JUMP-ICON.png"
+            IconFile = "assets\JUMP-ICON.png"
 
             if online_offline:
                 online_offline_show = "Online"
@@ -3883,7 +4131,7 @@ def profile(own_or_other, id_of_user):
 
             window.fill((224, 224, 224))
             try:
-                add_image(ProfileImageFile, 5, 30, 70, 70)
+                add_image(IconFile, 5, 30, 70, 70)
             except Exception:
                 pass
             pg.draw.rect(window, (172, 172, 172), (0, 0, 23, 23))
@@ -3928,7 +4176,7 @@ def profile(own_or_other, id_of_user):
 
 def menu():
     global show_filemissing_error
-    global ProfileImageFile
+    global IconFile
     global date
     global idusr
     global MainName
@@ -3989,10 +4237,10 @@ def menu():
             {"_id": ObjectId(idusr)}, {"$set": {"online": True}})  # True if user is playing
 
     while True:
-        if not os.path.isfile(ProfileImageFile):
-            ProfileImageFile = "assets\JUMP-ICON.png"
-        else:
-            ProfileImageFile = "assets\PROFILE-IMAGE.png"
+        if os.path.isfile(IconFile):
+            IconFile = "assets\JUMP-ICON.png"
+        # else:
+        #     IconFile = "assets\PROFILE-IMAGE.png"
         if account_banned_not:
             messagebox.showerror(
                 "Jump - Account Banned", f"Dear {MainName} your account has been banned permanently. For further details contact at costumer support.")
@@ -4046,7 +4294,7 @@ def menu():
                 files_available_not()
 
         window.fill((224, 224, 224))
-        add_image(ProfileImageFile, 5, 5, 50, 50)
+        add_image(IconFile, 5, 5, 50, 50)
         Text(f"{MainName}", (30, 30, 30), 60, 3, "comicsansms", 20)
         Text(f"Score : {str(numerize.numerize(MainScore))}",
              (30, 30, 30), 60, 33, "comicsansms", 15)
@@ -5716,7 +5964,7 @@ def Start_Screen():
         if color <= 0:
             color = 0
             if perform:
-                # try:
+                try:
                 cluster = MongoClient(
                     'mongodb+srv://aayanyasin:A10485766a@cluster0.ez9nx.mongodb.net/Jump?retryWrites=true&w=majority')
                 db = cluster["Jump"]
@@ -5733,15 +5981,15 @@ def Start_Screen():
                     except Exception:
                         pass
                     menu()
-                # except Exception:
-                #     perform = False
-                #     login_Screen_message_x = screen_w/3-40
-                #     error_message = "ⓘ"
-                #     login_Screen_message = "Please make sure you are connected to internet."
-                #     names = collection.find({"_id": ObjectId(idusr)})
-                #     for namess in names:
-                #        status = namess["online"]
-                #     collection.find_one_and_update({"_id": ObjectId(idusr)}, {"$set": {"online": False}})
+                except Exception:
+                    perform = False
+                    login_Screen_message_x = screen_w/3-40
+                    error_message = "ⓘ"
+                    login_Screen_message = "Please make sure you are connected to internet."
+                    names = collection.find({"_id": ObjectId(idusr)})
+                    for namess in names:
+                       status = namess["online"]
+                    collection.find_one_and_update({"_id": ObjectId(idusr)}, {"$set": {"online": False}})
 
         pg.display.update()
 
