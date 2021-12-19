@@ -18,6 +18,8 @@ import pyperclip
 import pickle
 import smtplib
 import ssl
+import requests as r
+import pycountry
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
@@ -88,6 +90,8 @@ def quit_game():
             status = namess["online"]
         collection.find_one_and_update(
             {"_id": ObjectId(idusr)}, {"$set": {"online": False}})
+        collection.find_one_and_update(
+            {"_id": ObjectId(idusr)}, {"$set": {"last_online": datetime.today().strftime('%d/%m/%Y')}})
         sys.exit()
 
 
@@ -130,26 +134,35 @@ def Game_over():
     go = True
     NorF_x = 383
     NorF = None
+    Now_click = False
+    time_to_update = 0
+    clock = pg.time.Clock()
 
     SCORE = ((coinCollected+time)//2)
     idusr = pickle.load(open(UserNameSavedFile, "rb"))
-    data_of_user = collection.find({"_id": ObjectId(idusr)})
-    for data in data_of_user:
-        currentC = data["coins"]
-        Level1 = data["level1"].split()
-        Level2 = data["level2"].split()
-        Level3 = data["level3"].split()
-        Level4 = data["level4"].split()
-        Level5 = data["level5"].split()
-        Level6 = data["level6"].split()
 
     def text_screen_Go(text, color, x, y, family, size):
         font2 = pg.font.SysFont(family, size)
         set_text2 = font2.render(text, True, color)
         window.blit(set_text2, (x, y))
 
-    def level_unlock_gameover(Current_Levelw):
-        pg.mouse.set_cursor(pg.cursors.Cursor(pg.SYSTEM_CURSOR_WAIT))
+    def highscore_Update(Current_Levelw):
+        global Level1
+        global Level2
+        global Level3
+        global Level4
+        global Level5
+        global Level6
+        global currentC
+        data_of_user = collection.find({"_id": ObjectId(idusr)})
+        for data in data_of_user:
+            currentC = data["coins"]
+            Level1 = data["level1"].split()
+            Level2 = data["level2"].split()
+            Level3 = data["level3"].split()
+            Level4 = data["level4"].split()
+            Level5 = data["level5"].split()
+            Level6 = data["level6"].split()
         match Current_Levelw:
             case 1:
                 current_l = "level1"
@@ -224,42 +237,64 @@ def Game_over():
         collection.find_one_and_update({"_id": ObjectId(idusr)}, {
                                        "$set": {"coins": str(int(currentC)+int(coinCollected))}})
 
+    def level_unlock_gameover(Current_Levelw):
+        pg.mouse.set_cursor(pg.cursors.Cursor(pg.SYSTEM_CURSOR_WAIT))
+        if Current_Levelw == 1:
+            collection.find_one_and_update({"_id": ObjectId(idusr)}, {"$set": {"level2": f"True {Level2[1]} {Level2[2]}"}})
+        if Current_Levelw == 2:
+            collection.find_one_and_update({"_id": ObjectId(idusr)}, {"$set": {"level3": f"True {Level3[1]} {Level3[2]}"}})
+        if Current_Levelw == 3:
+            collection.find_one_and_update({"_id": ObjectId(idusr)}, {"$set": {"level4": f"True {Level4[1]} {Level4[2]}"}})
+        if Current_Levelw == 4:
+            collection.find_one_and_update({"_id": ObjectId(idusr)}, {"$set": {"level5": f"True {Level5[1]} {Level5[2]}"}})
+        if Current_Levelw == 5:
+            collection.find_one_and_update({"_id": ObjectId(idusr)}, {"$set": {"level6": f"True {Level6[1]} {Level6[2]}"}})
+
     while go:
         for eventsGO in pg.event.get():
             pos = pg.mouse.get_pos()
             if eventsGO.type == pg.QUIT:
                 quit_game()
-            if pos[0] < 23 and pos[1] < 23 or pos[0] > 250 and pos[0] < 360 and pos[1] > 295 and pos[1] < 345 or pos[0] > 312 and pos[0] < 452 and pos[1] > 295 and pos[1] < 345:
+            if pos[0] < 23 and pos[1] < 23 or pos[0] > 250 and pos[0] < 360 and pos[1] > 295 and pos[1] < 345 or pos[0] > 312 and pos[0] < 452 and pos[1] > 295 and pos[1] < 345 and Now_click:
                 pg.mouse.set_cursor(pg.cursors.Cursor(pg.SYSTEM_CURSOR_HAND))
             else:
                 pg.mouse.set_cursor(pg.cursors.Cursor(pg.SYSTEM_CURSOR_ARROW))
             if eventsGO.type == pg.MOUSEBUTTONUP:
-                if pos[0] > 250 and pos[0] < 360 and pos[1] > 295 and pos[1] < 345:
+                if pos[0] > 250 and pos[0] < 360 and pos[1] > 295 and pos[1] < 345 and Now_click:
                     pg.mouse.set_cursor(
                         pg.cursors.Cursor(pg.SYSTEM_CURSOR_WAIT))
-                    collection.find_one_and_update({"_id": ObjectId(idusr)}, {
-                                                   "$set": {"coins": str(int(currentC)+int(coinCollected))}})
+                    collection.find_one_and_update({"_id": ObjectId(idusr)}, {"$set": {"coins": str(int(currentC)+int(coinCollected))}})
                     Play_Again()
-                if pos[0] < 23 and pos[1] < 23:
+                if pos[0] < 23 and pos[1] < 23 and Now_click:
                     menu()
-                if pos[0] > 312 and pos[0] < 452 and pos[1] > 295 and pos[1] < 345:
+                if pos[0] > 312 and pos[0] < 452 and pos[1] > 295 and pos[1] < 345 and Now_click:
                     if Current_Level == 1:
-                        level_unlock_gameover(2)
+                        if not eval(Level2[0]):
+                            level_unlock_gameover(1)
                         Level_2()
                     elif Current_Level == 2:
-                        level_unlock_gameover(3)
+                        if not eval(Level3[0]):
+                            level_unlock_gameover(2)
                         Level_3()
                     elif Current_Level == 3:
-                        level_unlock_gameover(4)
+                        if not eval(Level4[0]):
+                            level_unlock_gameover(3)
                         Level_4()
                     elif Current_Level == 4:
-                        level_unlock_gameover(5)
+                        if not eval(Level5[0]):
+                            level_unlock_gameover(4)
                         Level_5()
                     elif Current_Level == 5:
-                        level_unlock_gameover(6)
+                        if not eval(Level6[0]):
+                            level_unlock_gameover(5)
                         Level_6()
                     elif Current_Level == 6:
                         menu()
+
+        if time_to_update == 20:
+            pg.mouse.set_cursor(pg.cursors.Cursor(pg.SYSTEM_CURSOR_WAIT))
+            highscore_Update(Current_Level)
+            Now_click = True # Enable to click Next or Restart or Back
 
         if Current_Level != 6:
             NorF = "NEXT"
@@ -286,7 +321,9 @@ def Game_over():
                        white, 288, 233, "serif", 32)
         text_screen_Go("RESTART", white, 256, 307, "helvetica", 25)
         text_screen_Go(NorF, white, NorF_x, 307, "helvetica", 25)
+        time_to_update += 1
         pg.display.flip()
+        clock.tick(30)
 
 
 def pause(crnt_lvl):
@@ -386,6 +423,7 @@ def Level_1():
     jump = -15
     time = 0
     sec_1 = 0
+    started_playing = False
     fps = 30
 
     clock = pg.time.Clock()
@@ -410,11 +448,9 @@ def Level_1():
         for events in pg.event.get():
             if events.type == pg.QUIT:
                 quit_game()
-                # For Computer -- Keyboard Arrow Keys
             if events.type == pg.KEYDOWN:
                 if events.key == pg.K_UP or events.key == pg.K_w or events.key == pg.K_SPACE:
                     V_Y = jump
-                # For Mobile -- Click Sensors
             posMain = pg.mouse.get_pos()
             if posMain[0] > 660 and posMain[1] > 380 and posMain[0] < 677 and posMain[1] < screen_h or posMain[0] > 678 and posMain[1] > 380 and posMain[0] < screen_w and posMain[1] < screen_h:
                 pg.mouse.set_cursor(pg.cursors.Cursor(pg.SYSTEM_CURSOR_HAND))
@@ -427,6 +463,7 @@ def Level_1():
                     restart(1)
             if events.type == pg.KEYDOWN:
                 if events.key == K_RIGHT or events.key == K_d:
+                    started_playing = True
                     G_MOVE = 5
                     V_X = 1
                     VO_X = 1
@@ -505,7 +542,7 @@ def Level_1():
         if P_Y >= 270:
             V_Y = 0
 
-        if not gameover:
+        if not gameover and started_playing:
             time += 1
         window.fill(greySky)
         text_screen(f"Time : {time} ms", black, 0, 0)
@@ -2538,7 +2575,7 @@ def leaderboard_week():
     day_today = html_text[4].replace(",", "").lower()
     days = {"monday": 0, "tuesday": 1, "wednesday": 2,
             "thursday": 3, "friday": 4, "saturday": 5, "sunday": 6}
-    date = 7 - days[day_today]
+    date = 7 - days[day_today] # Week would end if this is "7"
     # day_today = calendar.day_name[date.weekday()]
     list_of_top_players = list(collection.find().sort(
         "highscore_All_times", DESCENDING))
@@ -2660,17 +2697,25 @@ def leaderboard_week():
         if show_leaderBoard_winner == 15:
             if date == 7:
                 if not leaderBoard_prize_availed_not:
+                    names = collection.find({"_id": ObjectId(idusr)})
+                    for namess in names:
+                        level1 = namess["level1"].split()
+                        level2 = namess["level2"].split()
+                        level3 = namess["level3"].split()
+                        level4 = namess["level4"].split()
+                        level5 = namess["level5"].split()
+                        level6 = namess["level6"].split()
                     if current_user_rank == 1:
                         messagebox.showinfo(
-                            "Jump - Winner", "Congratulations for placing on #1. You win $ 5000.")
+                            "Jump - Winner", "Congratulations for placing on #1. You win $ 5k.")
                         leaderboard_prize = 5000
                     if current_user_rank == 2:
                         messagebox.showinfo(
-                            "Jump - Winner", "Congratulations for placing on #2. You win $ 3500.")
+                            "Jump - Winner", "Congratulations for placing on #2. You win $ 3.5k.")
                         leaderboard_prize = 3500
                     if current_user_rank == 3:
                         messagebox.showinfo(
-                            "Jump - Winner", "Congratulations for placing on #3. You win $ 1800.")
+                            "Jump - Winner", "Congratulations for placing on #3. You win $ 1.8k.")
                         leaderboard_prize = 1800
                     if current_user_rank >= 4 and current_user_rank <= 6:
                         messagebox.showinfo(
@@ -2686,6 +2731,13 @@ def leaderboard_week():
                         {"_id": ObjectId(idusr)}, {"$set": {"leaderboard_prize": True}})
                     collection.find_one_and_update(
                         {"_id": ObjectId(idusr)}, {"$set": {"highscore_week": 0}})
+                    collection.find_one_and_update({"_id": ObjectId(idusr)}, {"$set": {"level1": f"{level1[0]} 0 {level1[2]}"}})
+                    collection.find_one_and_update({"_id": ObjectId(idusr)}, {"$set": {"level2": f"{level2[0]} 0 {level2[2]}"}})
+                    collection.find_one_and_update({"_id": ObjectId(idusr)}, {"$set": {"level3": f"{level3[0]} 0 {level3[2]}"}})
+                    collection.find_one_and_update({"_id": ObjectId(idusr)}, {"$set": {"level4": f"{level4[0]} 0 {level4[2]}"}})
+                    collection.find_one_and_update({"_id": ObjectId(idusr)}, {"$set": {"level5": f"{level5[0]} 0 {level5[2]}"}})
+                    collection.find_one_and_update({"_id": ObjectId(idusr)}, {"$set": {"level6": f"{level6[0]} 0 {level6[2]}"}})
+                    
             elif date != 0:
                 collection.find_one_and_update(
                     {"_id": ObjectId(idusr)}, {"$set": {"leaderboard_prize": False}})
@@ -2977,6 +3029,7 @@ def Options():
                 pg.mouse.set_cursor(pg.cursors.Cursor(pg.SYSTEM_CURSOR_ARROW))
             if events.type == MOUSEBUTTONDOWN:
                 if pos[0] < 23 and pos[1] < 23:
+                    pg.mouse.set_cursor(pg.cursors.Cursor(pg.SYSTEM_CURSOR_WAIT))
                     menu()
                 if pos[0] > 250 and pos[0] < 450 and pos[1] > 120 and pos[1] < 170 and Option_Click:
                     More()
@@ -3121,6 +3174,13 @@ def people():
             current_name_list_fromDB = []
             for users in data:
                 current_name_list_fromDB.append(users["name"])
+            names = collection.find({"_id": ObjectId(idusr)})
+            for namess in names:
+                CurrentUser_Name = namess["name"]
+            if name == CurrentUser_Name:
+                messagebox.showwarning(
+                    "Jump - Search", "You cannot search yourself !")
+                return
             if name in current_name_list_fromDB:
                 data_of_other_user = collection.find({"name": name})
                 for data in data_of_other_user:
@@ -3128,7 +3188,7 @@ def people():
                     profile("other", id_other)
             elif name not in current_name_list_fromDB:
                 messagebox.askretrycancel(
-                    "Jump - Log In", "Account with this username doesn't exist, please try again !")
+                    "Jump - Search", "Account with this username doesn't exist, please try again !")
 
     active_color = (224, 224, 224)
     entry_title = Entry_Code((screen_w//2)-50, 20, 32, 0, "black")
@@ -3645,6 +3705,8 @@ def account_settings(email, uname):
                             status = namess["online"]
                         collection.find_one_and_update({"_id": ObjectId(idusr)}, {
                                                        "$set": {"online": False}})
+                        collection.find_one_and_update(
+                        {"_id": ObjectId(idusr)}, {"$set": {"last_online": datetime.today().strftime('%d/%m/%Y')}})
                         forgot_pass()
                 if pos[0] > 206 and pos[0] < 492 and pos[1] > 94 and pos[1] < 134:
                     activea = True
@@ -3668,14 +3730,14 @@ def account_settings(email, uname):
                     if "-" not in name and "-" not in old_pass:
                         check_login(name, old_pass, new_pass)
                     else:
-                        messagebox.showwarrning(
+                        messagebox.showwarning(
                             "Jump - Account Settings", f"Fields cannot contain spaces.")
             if events.type == pg.KEYDOWN:
                 if events.key == pg.K_RETURN:
                     if "-" not in name and "-" not in old_pass:
                         check_login(name, old_pass, new_pass)
                     else:
-                        messagebox.showwarrning(
+                        messagebox.showwarning(
                             "Jump - Account Settings", f"Fields cannot contain spaces.")
                 key_pressed = pg.key.name(events.key)
                 bullets = "\u2022"
@@ -3898,7 +3960,7 @@ def profile(own_or_other, id_of_user):
     if own_or_other == "own":
         global IconFile
 
-        #### Depressiated probabbly would show up next update ####
+        #### Depressiated probably would show up next update ####
         # def change_profile_pic():
         #     original = filedialog.askopenfilename(
         #         filetypes=[("All Files", ("*.jpg", "*.jpeg", "*.png"))])
@@ -3913,7 +3975,7 @@ def profile(own_or_other, id_of_user):
             MainName = namess["name"]
             MainEmail = namess["email"]
             Available_coins = str(numerize.numerize(int(namess["coins"])))
-            MainScore = numerize.numerize(namess["highscore_All_times"])
+            MainScore = namess["highscore_All_times"]
             rank_leaderboard_alltime = namess["rank_all_time"]
             if rank_leaderboard_alltime == 0:
                 rank_leaderboard_alltime = "None"
@@ -3923,6 +3985,28 @@ def profile(own_or_other, id_of_user):
             char4_owned = namess["skin4"]
             char5_owned = namess["skin5"]
             char6_owned = namess["skin6"]
+
+        if MainScore < 50000:
+            title_plr = "Junior"
+        elif MainScore >= 50000 and MainScore < 110000:
+            title_plr = "Expert"
+        elif MainScore >= 110000 and MainScore < 250000:
+            title_plr = "Master"
+        elif MainScore >= 250000 and MainScore < 500000:
+            title_plr = "Professor"
+        elif MainScore >= 500000 and MainScore < 1000000:
+            title_plr = "Commander"
+        elif MainScore >= 1000000 and MainScore < 2000000:
+            title_plr = "President"
+        elif MainScore >= 2000000 and MainScore < 3000000:
+            title_plr = "King"
+        elif MainScore >= 3000000 and MainScore < 3800000:
+            title_plr = "Conqueror"
+        elif MainScore >= 3800000 and MainScore < 5000000:
+            title_plr = "Legend"
+        elif MainScore >= 5000000:
+            title_plr = "God"
+        
 
         Char4 = rd.choice(((254, 234, 0), (159, 32, 164),
                            (57, 121, 42), (96, 59, 44)))
@@ -3940,7 +4024,7 @@ def profile(own_or_other, id_of_user):
                 pos = pg.mouse.get_pos()
                 if events2.type == pg.QUIT:
                     quit_game()
-                if pos[0] < 23 and pos[1] < 23 or pos[0] > 623 and pos[1] < 23 or pos[0] > 85 and pos[1] > 74 and pos[0] < 166 and pos[1] < 95 or pos[0] > 178 and pos[1] > 41 and pos[0] < 202 and pos[1] < 61:
+                if pos[0] < 23 and pos[1] < 23 or pos[0] > 623 and pos[1] < 23 or pos[0] > 85 and pos[1] > 74 and pos[0] < 166 and pos[1] < 95 or pos[0] > 178 and pos[1] > 41 and pos[0] < 202 and pos[1] < 61 or pos[0] > 160 and pos[0] < 179 and pos[1] > 152 and pos[1] < 173:
                     pg.mouse.set_cursor(
                         pg.cursors.Cursor(pg.SYSTEM_CURSOR_HAND))
                 else:
@@ -3951,6 +4035,8 @@ def profile(own_or_other, id_of_user):
                         pg.mouse.set_cursor(
                             pg.cursors.Cursor(pg.SYSTEM_CURSOR_WAIT))
                         menu()
+                    if pos[0] > 160 and pos[0] < 179 and pos[1] > 152 and pos[1] < 173:
+                        messagebox.showinfo("Jump - Titles", "1) Highscore > 0 => Junior\n2) Highscore > 50k => Expert\n3) Highscore > 110k => Master\n4) Highscore > 250k => Professor\n5) Highscore > 500k => Commander\n6) Highscore > 1M => President\n7) Highscore > 2M => King\n8) Highscore > 3M => Conqueror\n9) Highscore > 3.8M => Legend\n10) Highscore > 5M => God")
                     if pos[0] > 623 and pos[1] < 23:
                         pg.mouse.set_cursor(
                             pg.cursors.Cursor(pg.SYSTEM_CURSOR_WAIT))
@@ -3961,6 +4047,8 @@ def profile(own_or_other, id_of_user):
                             status = namess["online"]
                         collection.find_one_and_update({"_id": ObjectId(idusr)}, {
                                                        "$set": {"online": False}})
+                        collection.find_one_and_update(
+                        {"_id": ObjectId(idusr)}, {"$set": {"last_online": datetime.today().strftime('%d/%m/%Y')}}) 
                         Log_In()
                     if pos[0] > 85 and pos[1] > 74 and pos[0] < 166 and pos[1] < 95:
                         account_settings(MainEmail, MainName)
@@ -4006,14 +4094,16 @@ def profile(own_or_other, id_of_user):
             text("Log Out", "black", screen_w-67, 0, "comicsansms", 15)
             # pg.draw.rect(window, (224, 224, 224), (60, 27, 20, 20))
             # text("✎", "black", 63, 25, "segoeuisymbol", 15)
-            text(f"Title : Expert", "black", 10, 150, "comicsansms", 18)
+            pg.draw.ellipse(window, (100, 100, 100), (160, 153, 20, 20))
+            text("?", "white", 167, 153, "helvetica", 15)
+            text(f"Title : {title_plr}", "black", 10, 150, "comicsansms", 18)
             text(f"Rank : # {rank_leaderboard_alltime}",
                  "black", 10, 200, "comicsansms", 18)
             text(f"Coins : {Available_coins}",
                  "black", 10, 250, "comicsansms", 18)
-            text(f"Highscore : {MainScore}",
+            text(f"Highscore : {numerize.numerize(MainScore)}",
                  "black", 10, 300, "comicsansms", 18)
-            text(f"Joined : {str(date_player_joined_jump)}",
+            text(f"Country : {str(country_player_joined_jump)}",
                  "black", 10, 350, "comicsansms", 18)
             text(f"Character's Owned :",
                  "black", 353, 125, "comicsansms", 15)
@@ -4051,7 +4141,7 @@ def profile(own_or_other, id_of_user):
         for otherss in Others:
             OtherName = otherss["name"]
             Other_coins = str(numerize.numerize(int(otherss["coins"])))
-            OtherScore = str(numerize.numerize(otherss["highscore_All_times"]))
+            OtherScore = otherss["highscore_All_times"]
             rank_leaderboard_alltime = otherss["rank_all_time"]
             player_likes = otherss["likes"]
             player_likes_show = numerize.numerize(otherss["likes"])
@@ -4062,7 +4152,28 @@ def profile(own_or_other, id_of_user):
             char4_owned = otherss["skin4"]
             char5_owned = otherss["skin5"]
             char6_owned = otherss["skin6"]
-            date_other_joined_jump = otherss["date_joined"]
+            country_other_joined_jump = (otherss["country"].split())[0]
+
+        if OtherScore < 50000:
+            title_other = "Junior"
+        elif OtherScore >= 50000 and OtherScore < 110000:
+            title_other = "Expert"
+        elif OtherScore >= 110000 and OtherScore < 250000:
+            title_other = "Master"
+        elif OtherScore >= 250000 and OtherScore < 500000:
+            title_other = "Professor"
+        elif OtherScore >= 500000 and OtherScore < 1000000:
+            title_other = "Commander"
+        elif OtherScore >= 1000000 and OtherScore < 2000000:
+            title_other = "President"
+        elif OtherScore >= 2000000 and OtherScore < 3000000:
+            title_other = "King"
+        elif OtherScore >= 3000000 and OtherScore < 3800000:
+            title_other = "Conqueror"
+        elif OtherScore >= 3800000 and OtherScore < 5000000:
+            title_other = "Legend"
+        elif OtherScore >= 5000000:
+            title_other = "God"
 
         Char4 = rd.choice(((254, 234, 0), (159, 32, 164),
                            (57, 121, 42), (96, 59, 44)))
@@ -4144,14 +4255,16 @@ def profile(own_or_other, id_of_user):
             text(player_likes_show, "black", 175, 76, "segoeuisymbol", 12)
             text(online_offline_show, "black", screen_w -
                  67+online_width, 0, "comicsansms", 15)
-            text(f"Title : Expert", "black", 10, 150, "comicsansms", 18)
+            pg.draw.ellipse(window, (100, 100, 100), (160, 153, 20, 20))
+            text("?", "white", 167, 153, "helvetica", 15)
+            text(f"Title : {title_other}", "black", 10, 150, "comicsansms", 18)
             text(f"Rank : # {rank_leaderboard_alltime}",
                  "black", 10, 200, "comicsansms", 18)
             text(f"Coins : {Other_coins}",
                  "black", 10, 250, "comicsansms", 18)
-            text(f"Highscore : {OtherScore}",
+            text(f"Highscore : {numerize.numerize(OtherScore)}",
                  "black", 10, 300, "comicsansms", 18)
-            text(f"Joined : {str(date_other_joined_jump)}",
+            text(f"Country : {str(country_other_joined_jump)}",
                  "black", 10, 350, "comicsansms", 18)
             text(f"Character's Owned :",
                  "black", 353, 125, "comicsansms", 15)
@@ -4181,7 +4294,7 @@ def menu():
     global idusr
     global MainName
     global Available_coins
-    global date_player_joined_jump
+    global country_player_joined_jump
     black = (0, 0, 0)
     white = (255, 255, 255)
     title_x = 270
@@ -4213,7 +4326,7 @@ def menu():
         account_banned_not = namess["banned"]
         status = namess["online"]
         show_message = namess["show_message"]
-        date_player_joined_jump = namess["date_joined"]
+        country_player_joined_jump = (namess["country"].split())[0]
         level1 = namess["level1"].split()
         level2 = namess["level2"].split()
         level3 = namess["level3"].split()
@@ -4225,16 +4338,18 @@ def menu():
         Sum_Score_Alltime = int(level1[2]) + int(level2[2]) + int(
             level3[2]) + int(level4[2]) + int(level5[2]) + int(level6[2])
 
-    if MainScore_week < Sum_Score_week:
+    if int(MainScore_week) < int(Sum_Score_week):
         collection.find_one_and_update({"_id": ObjectId(idusr)}, {
                                        "$set": {"highscore_week": Sum_Score_week}})  # Total Highsocre ( Week )
-    if MainScore < Sum_Score_Alltime:
+    if int(MainScore) < int(Sum_Score_Alltime):
         collection.find_one_and_update({"_id": ObjectId(idusr)}, {"$set": {
                                        "highscore_All_times": Sum_Score_Alltime}})  # Total Highsocre ( All Times )
 
     if not status:
         collection.find_one_and_update(
             {"_id": ObjectId(idusr)}, {"$set": {"online": True}})  # True if user is playing
+        collection.find_one_and_update(
+            {"_id": ObjectId(idusr)}, {"$set": {"last_online": ""}})
 
     while True:
         if os.path.isfile(IconFile):
@@ -4316,54 +4431,110 @@ def menu():
         pg.display.update()
         clock.tick(fps)
 
+def getIP_and_Location():
+    ip = r.get("https://api.ipify.org").text # Current Ip Address
+    url = f"https://ipinfo.io/{ip}/json"
+    html = urlopen(url).read()
+    soup = BeautifulSoup(html, features="html.parser")
+    for script in soup(["script", "style"]):
+        script.extract()
+    text = soup.get_text()
+    lines = (line.strip() for line in text.splitlines())
+    chunks = (phrase.strip() for line in lines for phrase in line.split("  "))
+    text = '\n'.join(chunk for chunk in chunks if chunk)
+    country_abbr = eval(text)["country"]
+    country_name = pycountry.countries.get(alpha_2=country_abbr).name
+    return country_name + " " + ip
 
 def sign_up():
 
     def check_login(email, name, paswd):
         # print(f"Email : {email}\nName : {name}\nPassword : {paswd}")
+        except_terms_and_conditions = messagebox.askyesno("Jump - Terms and Condition", "By creating an account you agree to our terms and condition.")
         pg.mouse.set_cursor(pg.cursors.Cursor(pg.SYSTEM_CURSOR_WAIT))
-        data = list(collection.find())
-        current_email_list_fromDB = []
-        current_name_list_fromDB = []
-        for users in data:
-            current_email_list_fromDB.append(users["email"])
-            current_name_list_fromDB.append(users["name"])
-        if email in current_email_list_fromDB:
-            messagebox.askretrycancel(
-                "Jump - Log In", "Account with this email address already exist, please try again !")
-        else:
-            if name in current_name_list_fromDB:
+        if not except_terms_and_conditions:
+            return
+        elif except_terms_and_conditions:
+            data = list(collection.find())
+            current_email_list_fromDB = []
+            current_name_list_fromDB = []
+            for users in data:
+                current_email_list_fromDB.append(users["email"])
+                current_name_list_fromDB.append(users["name"])
+            if email in current_email_list_fromDB:
                 messagebox.askretrycancel(
-                    "Jump - Log In", "Account with this username already exist, please try again !")
+                    "Jump - Log In", "Account with this email address already exist, please try again !")
             else:
-                collection.insert_one({
-                    "name": name,
-                    "password": paswd,
-                    "codes": "iloveu jumpay aayany",
-                    "coins": "0",
-                    "email": email,
-                    "highscore_All_times": 0,
-                    "level1": "True 0 0",
-                    "level2": "False 0 0",
-                    "level3": "False 0 0",
-                    "level4": "False 0 0",
-                    "level5": "False 0 0",
-                    "level6": "False 0 0",
-                    "skin2": False,
-                    "skin3": False,
-                    "skin4": False,
-                    "skin5": False,
-                    "skin6": False,
-                    "online": False,
-                    "leaderboard_prize": False,
-                    "banned": False,
-                    "show_message": "none",
-                    "rank_all_time": 0,
-                    "highscore_week": 0,
-                    "likes": 0,
-                    "liked_by": "",
-                    "date_joined": datetime.today().strftime('%d/%m/%Y')})
-                Log_In()
+                if name in current_name_list_fromDB:
+                    messagebox.askretrycancel(
+                        "Jump - Log In", "Account with this username already exist, please try again !")
+                else:
+                    collection.insert_one({
+                        "name": name,
+                        "password": paswd,
+                        "codes": "iloveu jumpay aayany",
+                        "email": email,
+                        "country": getIP_and_Location(),
+                        "coins": "0",
+                        "likes": 0,
+                        "liked_by": "",
+                        "show_message": "none",
+                        "rank_all_time": 0,
+                        "highscore_week": 0,
+                        "highscore_All_times": 0,
+                        "leaderboard_prize": False,
+                        "skin2": False,
+                        "skin3": False,
+                        "skin4": False,
+                        "skin5": False,
+                        "skin6": False,
+                        "level1": "True 0 0",
+                        "level2": "False 0 0",
+                        "level3": "False 0 0",
+                        "level4": "False 0 0",
+                        "level5": "False 0 0",
+                        "level6": "False 0 0",
+                        "online": False,
+                        "last_online": datetime.today().strftime('%d/%m/%Y'),
+                        "banned": False})
+                    sender_email = "aayanjump@gmail.com"
+                    receiver_email = email
+                    password = "A10485766a"
+                    message = MIMEMultipart("alternative")
+                    message["Subject"] = "Account Created On Jump"
+                    message["From"] = sender_email
+                    message["To"] = receiver_email
+                    text = f"""\
+                    Hi {name},
+                    Your account has been successfully created in Jump, on {datetime.today().strftime('%d/%m/%Y')}.
+                    We welcome you to the community and feel free to provide feedback on itch.io about your experience. For any querries or problem email back at aayanjump@gmail.com.
+                    If this wasn't you then email us and we would remove this account.
+                    Thanks,
+                    The Jump Support"""
+                    html = f"""\
+                    <html>
+                      <body>
+                        <p>Hi {name},<br><br>
+                           Your account has been successfully created in Jump, on {datetime.today().strftime('%d/%m/%Y')}.<br>
+                           We welcome you to the community and feel free to provide feedback on <a href="https://aayan-yasin25.itch.io/jump">itch.io</a> about your experience. For any querries or problem email back at <a href=mailto:"aayanjump@gmail.com">aayanjump@gmail.com.</a><br><br>
+                           If this wasn't you then email us and we would remove this account.<br><br>
+                           Thanks<br>
+                           The Jump Support
+                        </p>
+                      </body>
+                    </html>"""
+                    part1 = MIMEText(str(text), "plain")
+                    part2 = MIMEText(html, "html")
+                    message.attach(part1)
+                    message.attach(part2)
+                    context = ssl.create_default_context()
+                    with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
+                        server.login(sender_email, password)
+                        server.sendmail(
+                            sender_email, receiver_email, message.as_string()
+                        )
+                    messagebox.showinfo("Jump - Sign Up", "Account successfully created, You can now log in.")
+                    Log_In()
 
     class Entry_Name:
         def __init__(self, x, y, w, h, color):
@@ -4398,32 +4569,6 @@ def sign_up():
     username_placeholder = ""
     password_placeholder = ""
     entry_textc1 = Entry_Name(215, 114-12, 10, 10, (30, 30, 30))
-    entry_textc2 = Entry_Name(225, 114-12, 10, 10, (30, 30, 30))
-    entry_textc3 = Entry_Name(235, 114-12, 10, 10, (30, 30, 30))
-    entry_textc4 = Entry_Name(245, 114-12, 10, 10, (30, 30, 30))
-    entry_textc5 = Entry_Name(255, 114-12, 10, 10, (30, 30, 30))
-    entry_textc6 = Entry_Name(265, 114-12, 10, 10, (30, 30, 30))
-    entry_textc7 = Entry_Name(275, 114-12, 10, 10, (30, 30, 30))
-    entry_textc8 = Entry_Name(285, 114-12, 10, 10, (30, 30, 30))
-    entry_textc9 = Entry_Name(295, 114-12, 10, 10, (30, 30, 30))
-    entry_textc10 = Entry_Name(305, 114-12, 10, 10, (30, 30, 30))
-    entry_textc11 = Entry_Name(315, 114-12, 10, 10, (30, 30, 30))
-    entry_textc12 = Entry_Name(325, 114-12, 10, 10, (30, 30, 30))
-    entry_textc13 = Entry_Name(335, 114-12, 10, 10, (30, 30, 30))
-    entry_textc14 = Entry_Name(345, 114-12, 10, 10, (30, 30, 30))
-    entry_textc15 = Entry_Name(355, 114-12, 10, 10, (30, 30, 30))
-    entry_textc16 = Entry_Name(365, 114-12, 10, 10, (30, 30, 30))
-    entry_textc17 = Entry_Name(375, 114-12, 10, 10, (30, 30, 30))
-    entry_textc18 = Entry_Name(385, 114-12, 10, 10, (30, 30, 30))
-    entry_textc19 = Entry_Name(395, 114-12, 10, 10, (30, 30, 30))
-    entry_textc20 = Entry_Name(405, 114-12, 10, 10, (30, 30, 30))
-    entry_textc21 = Entry_Name(415, 114-12, 10, 10, (30, 30, 30))
-    entry_textc22 = Entry_Name(425, 114-12, 10, 10, (30, 30, 30))
-    entry_textc23 = Entry_Name(435, 114-12, 10, 10, (30, 30, 30))
-    entry_textc24 = Entry_Name(445, 114-12, 10, 10, (30, 30, 30))
-    entry_textc25 = Entry_Name(455, 114-12, 10, 10, (30, 30, 30))
-    entry_textc26 = Entry_Name(465, 114-12, 10, 10, (30, 30, 30))
-    entry_textc27 = Entry_Name(475, 114-12, 10, 10, (30, 30, 30))
     entry_texta1 = Entry_Name(215+35, 104+55, 16, 16, (30, 30, 30))
     entry_texta2 = Entry_Name(245+35, 104+55, 16, 16, (30, 30, 30))
     entry_texta3 = Entry_Name(275+35, 104+55, 16, 16, (30, 30, 30))
@@ -4515,7 +4660,6 @@ def sign_up():
             textb14_email + textb15_email + textb16_email + textb17_email + textb18_email + textb19_email + textb20_email + \
             textb21_email + textb22_email + textb23_email + \
             textb24_email + textb25_email + textb26_email + textb27_email
-        email = email.replace("-", "")
         name = texta1+texta2+texta3+texta4+texta5+texta6+texta7
         password = textb1_Password+textb2_Password+textb3_Password + \
             textb4_Password+textb5_Password+textb6_Password+textb7_Password
@@ -4573,24 +4717,26 @@ def sign_up():
                 if pos[0] > 198 and pos[0] < 500 and pos[1] > 284 and pos[1] < 331:
                     if "@" in email and ".com" in email:
                         if "-" not in name and "-" not in password:
+                            email = email.replace("-", "")
                             check_login(email, name, password)
                         else:
-                            messagebox.showwarrning(
-                                "Jump - Log In", f"Fields cannot contain spaces.")
+                            messagebox.showwarning(
+                                "Jump - Sign Up", f"Fields cannot contain spaces.")
                     else:
                         messagebox.showerror(
-                            "Jump - Log In", f"Invalid Email Address !")
+                            "Jump - Sign Up", f"Invalid Email Address !")
             if events.type == pg.KEYDOWN:
                 if events.key == pg.K_RETURN:
                     if "@" in email and ".com" in email:
                         if "-" not in name and "-" not in password:
+                            email = email.replace("-", "")
                             check_login(email, name, password)
                         else:
-                            messagebox.showwarrning(
-                                "Jump - Log In", f"Fields cannot contain spaces.")
+                            messagebox.showwarning(
+                                "Jump - Sign Up", f"Fields cannot contain spaces.")
                     else:
                         messagebox.showerror(
-                            "Jump - Log In", f"Invalid Email Address !")
+                            "Jump - Sign Up", f"Invalid Email Address !")
                 key_pressed = pg.key.name(events.key)
                 if events.key == pg.K_2 and pg.key.get_mods() & pg.KMOD_SHIFT:
                     key_pressed = "@"
@@ -4836,33 +4982,7 @@ def sign_up():
         entry_textb5.place_text(textb5)
         entry_textb6.place_text(textb6)
         entry_textb7.place_text(textb7)
-        entry_textc1.place_text(textb1_email)
-        entry_textc2.place_text(textb2_email)
-        entry_textc3.place_text(textb3_email)
-        entry_textc4.place_text(textb4_email)
-        entry_textc5.place_text(textb5_email)
-        entry_textc6.place_text(textb6_email)
-        entry_textc7.place_text(textb7_email)
-        entry_textc8.place_text(textb8_email)
-        entry_textc9.place_text(textb9_email)
-        entry_textc10.place_text(textb10_email)
-        entry_textc11.place_text(textb11_email)
-        entry_textc12.place_text(textb12_email)
-        entry_textc13.place_text(textb13_email)
-        entry_textc14.place_text(textb14_email)
-        entry_textc15.place_text(textb15_email)
-        entry_textc16.place_text(textb16_email)
-        entry_textc17.place_text(textb17_email)
-        entry_textc18.place_text(textb18_email)
-        entry_textc19.place_text(textb19_email)
-        entry_textc20.place_text(textb20_email)
-        entry_textc21.place_text(textb21_email)
-        entry_textc22.place_text(textb22_email)
-        entry_textc23.place_text(textb23_email)
-        entry_textc24.place_text(textb24_email)
-        entry_textc25.place_text(textb25_email)
-        entry_textc26.place_text(textb26_email)
-        entry_textc27.place_text(textb27_email)
+        entry_textc1.place_text(email)
         button.place_widget()
         text("ⓘ", "black", 510, 103, "segoeuisymbol", 20)
         text("ⓘ", "black", 510, 168, "segoeuisymbol", 20)
@@ -5076,7 +5196,6 @@ def forgot_pass():
             textb14_email + textb15_email + textb16_email + textb17_email + textb18_email + textb19_email + textb20_email + \
             textb21_email + textb22_email + textb23_email + \
             textb24_email + textb25_email + textb26_email + textb27_email
-        email = email.replace("-", "")
         for events in pg.event.get():
             pos = pg.mouse.get_pos()
             if events.type == pg.QUIT:
@@ -5105,9 +5224,11 @@ def forgot_pass():
                     activea = False
                     active_colora = (224, 224, 224)
                 if pos[0] > 198 and pos[0] < 500 and pos[1] > 245 and pos[1] < 294:
+                    email = email.replace("-", "")
                     check_email(email)
             if events.type == pg.KEYDOWN:
                 if events.key == pg.K_RETURN:
+                    email = email.replace("-", "")
                     check_email(email)
                 key_pressed = pg.key.name(events.key)
                 if events.key == pg.K_2 and pg.key.get_mods() & pg.KMOD_SHIFT:
@@ -5233,33 +5354,7 @@ def forgot_pass():
         entry_title.place_text("Forgot Password")
         entrya1.place_widget()
         entrya2.place_widget()
-        entry_textc1.place_text(textb1_email)
-        entry_textc2.place_text(textb2_email)
-        entry_textc3.place_text(textb3_email)
-        entry_textc4.place_text(textb4_email)
-        entry_textc5.place_text(textb5_email)
-        entry_textc6.place_text(textb6_email)
-        entry_textc7.place_text(textb7_email)
-        entry_textc8.place_text(textb8_email)
-        entry_textc9.place_text(textb9_email)
-        entry_textc10.place_text(textb10_email)
-        entry_textc11.place_text(textb11_email)
-        entry_textc12.place_text(textb12_email)
-        entry_textc13.place_text(textb13_email)
-        entry_textc14.place_text(textb14_email)
-        entry_textc15.place_text(textb15_email)
-        entry_textc16.place_text(textb16_email)
-        entry_textc17.place_text(textb17_email)
-        entry_textc18.place_text(textb18_email)
-        entry_textc19.place_text(textb19_email)
-        entry_textc20.place_text(textb20_email)
-        entry_textc21.place_text(textb21_email)
-        entry_textc22.place_text(textb22_email)
-        entry_textc23.place_text(textb23_email)
-        entry_textc24.place_text(textb24_email)
-        entry_textc25.place_text(textb25_email)
-        entry_textc26.place_text(textb26_email)
-        entry_textc27.place_text(textb27_email)
+        entry_textc1.place_text(email)
         button.place_widget()
         pg.draw.rect(window, (172, 172, 172), (0, 0, 23, 23))
         text("<", "black", 5, -1, "helvetica", 20)
@@ -5786,7 +5881,7 @@ def Log_In():
                     if "-" not in name and "-" not in password:
                         check_login(name, password)
                     else:
-                        messagebox.showwarrning(
+                        messagebox.showwarning(
                             "Jump - Log In", f"Fields cannot contain spaces. ")
             if events.type == pg.KEYDOWN:
                 if events.key == pg.K_RETURN:
@@ -5796,7 +5891,7 @@ def Log_In():
                     if "-" not in name and "-" not in password:
                         check_login(name, password)
                     else:
-                        messagebox.showwarrning(
+                        messagebox.showwarning(
                             "Jump - Log In", f"Fields cannot contain spaces. ")
                 key_pressed = pg.key.name(events.key)
                 if activea:
@@ -5965,22 +6060,22 @@ def Start_Screen():
             color = 0
             if perform:
                 try:
-                cluster = MongoClient(
-                    'mongodb+srv://aayanyasin:A10485766a@cluster0.ez9nx.mongodb.net/Jump?retryWrites=true&w=majority')
-                db = cluster["Jump"]
-                collection = db["Leader Board"]
-                if logedinornot == "none":
-                    try:
-                        pg.mixer.music.play()
-                    except Exception:
-                        pass
-                    Log_In()
-                else:
-                    try:
-                        pg.mixer.music.play()
-                    except Exception:
-                        pass
-                    menu()
+                    cluster = MongoClient(
+                        'mongodb+srv://aayanyasin:A10485766a@cluster0.ez9nx.mongodb.net/Jump?retryWrites=true&w=majority')
+                    db = cluster["Jump"]
+                    collection = db["Players Data"]
+                    if logedinornot == "none":
+                        try:
+                            pg.mixer.music.play()
+                        except Exception:
+                            pass
+                        Log_In()
+                    else:
+                        try:
+                            pg.mixer.music.play()
+                        except Exception:
+                            pass
+                        menu()
                 except Exception:
                     perform = False
                     login_Screen_message_x = screen_w/3-40
@@ -5990,6 +6085,8 @@ def Start_Screen():
                     for namess in names:
                        status = namess["online"]
                     collection.find_one_and_update({"_id": ObjectId(idusr)}, {"$set": {"online": False}})
+                    collection.find_one_and_update(
+                    {"_id": ObjectId(idusr)}, {"$set": {"last_online": datetime.today().strftime('%d/%m/%Y')}})
 
         pg.display.update()
 
