@@ -3253,6 +3253,16 @@ def people():
                     check_code.Enter_code(name=name)
                 key_pressed = pg.key.name(events.key)
                 if active:
+                    if events.key == pg.K_v and pg.key.get_mods() & pg.KMOD_CTRL:
+                        clipboard_text = list(pyperclip.paste())
+                        text1 = clipboard_text[0]
+                        text2 = clipboard_text[1]
+                        text3 = clipboard_text[2]
+                        text4 = clipboard_text[3]
+                        text5 = clipboard_text[4]
+                        text6 = clipboard_text[5]
+                        text7 = clipboard_text[6]
+                        word = 8
                     if key_pressed in nums_only or key_pressed in alphabets:
                         if word == 1:
                             text1 = key_pressed
@@ -6076,7 +6086,8 @@ def Start_Screen():
                         except Exception:
                             pass
                         menu()
-                except Exception:
+                except Exception as e:
+                    print(e)
                     perform = False
                     login_Screen_message_x = screen_w/3-40
                     error_message = "ⓘ"
