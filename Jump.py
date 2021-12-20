@@ -3436,7 +3436,7 @@ def Settings():
                 if posS[0] < 23 and posS[1] < 23:
                     Options()
                 if posS[0] > 420 and posS[0] < 480 and posS[1] > 128 and posS[1] < 153:
-                    pg.mixer.music.set_volume(0.5)
+                    pg.mixer.music.set_volume(0.2)
                     btmClick = 420
                 if posS[0] > 491 and posS[0] < 552 and posS[1] > 128 and posS[1] < 153:
                     pg.mixer.music.set_volume(0)
