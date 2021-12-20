@@ -2,20 +2,22 @@
 URL=https://github.com/AayanYasin/Jump/blob/main/Readme.txt
 
 
-Terms and Conditions:
+Terms and Conditions
 
-All rights of this game are owned by Aayan Yasin and any unlawful or illegal act with orignal files would count under cyber crime. No major changes to be made without the concern of owner. Contact if you have found a bug or need any help. Do provide us feedback with some ideas to make JUMP better and fun for everyone.
+Rights:-
+All rights of this game belong to Aayan Yasin and any unlawful or illegal act with original files would count under crime. No changes to be made without the concern of owner. If found your account would be permanently banned.
 
-FAQ:
+Users Information:-
+We do not collect extra information except the information you have provided and your location. We collect your email address so we can notify you and keep you up to date with your accounts actitvity. Apart from that email address is also used to recover passwords.
 
-Why do we need your email ?
-....
+When to Contact:-
+Contact if you have found a bug or need any help. Do provide us feedback and suggestions to make JUMP better and fun for everyone. You can also cantact us is you are having trouble with your account, want to delete your account or change your email address.
 
 📞 +92 3325242409
 ✉ aayanjump@gmail.com
-🌏 Nazimabad / Karachi / Pakistan 
+🌏 Nazimabad # 2 / Karachi / Pakistan 
 
-By creating jump account you agree to our terms and conditions.
+By creating account in game you agree to our terms and conditions.
 
 © 2021 Aayan Yasin
 ✔ Version 2.0.1.1
