@@ -240,15 +240,20 @@ def Game_over():
     def level_unlock_gameover(Current_Levelw):
         pg.mouse.set_cursor(pg.cursors.Cursor(pg.SYSTEM_CURSOR_WAIT))
         if Current_Levelw == 1:
-            collection.find_one_and_update({"_id": ObjectId(idusr)}, {"$set": {"level2": f"True {Level2[1]} {Level2[2]}"}})
+            collection.find_one_and_update({"_id": ObjectId(idusr)}, {
+                                           "$set": {"level2": f"True {Level2[1]} {Level2[2]}"}})
         if Current_Levelw == 2:
-            collection.find_one_and_update({"_id": ObjectId(idusr)}, {"$set": {"level3": f"True {Level3[1]} {Level3[2]}"}})
+            collection.find_one_and_update({"_id": ObjectId(idusr)}, {
+                                           "$set": {"level3": f"True {Level3[1]} {Level3[2]}"}})
         if Current_Levelw == 3:
-            collection.find_one_and_update({"_id": ObjectId(idusr)}, {"$set": {"level4": f"True {Level4[1]} {Level4[2]}"}})
+            collection.find_one_and_update({"_id": ObjectId(idusr)}, {
+                                           "$set": {"level4": f"True {Level4[1]} {Level4[2]}"}})
         if Current_Levelw == 4:
-            collection.find_one_and_update({"_id": ObjectId(idusr)}, {"$set": {"level5": f"True {Level5[1]} {Level5[2]}"}})
+            collection.find_one_and_update({"_id": ObjectId(idusr)}, {
+                                           "$set": {"level5": f"True {Level5[1]} {Level5[2]}"}})
         if Current_Levelw == 5:
-            collection.find_one_and_update({"_id": ObjectId(idusr)}, {"$set": {"level6": f"True {Level6[1]} {Level6[2]}"}})
+            collection.find_one_and_update({"_id": ObjectId(idusr)}, {
+                                           "$set": {"level6": f"True {Level6[1]} {Level6[2]}"}})
 
     while go:
         for eventsGO in pg.event.get():
@@ -263,7 +268,8 @@ def Game_over():
                 if pos[0] > 250 and pos[0] < 360 and pos[1] > 295 and pos[1] < 345 and Now_click:
                     pg.mouse.set_cursor(
                         pg.cursors.Cursor(pg.SYSTEM_CURSOR_WAIT))
-                    collection.find_one_and_update({"_id": ObjectId(idusr)}, {"$set": {"coins": str(int(currentC)+int(coinCollected))}})
+                    collection.find_one_and_update({"_id": ObjectId(idusr)}, {
+                                                   "$set": {"coins": str(int(currentC)+int(coinCollected))}})
                     Play_Again()
                 if pos[0] < 23 and pos[1] < 23 and Now_click:
                     menu()
@@ -294,7 +300,7 @@ def Game_over():
         if time_to_update == 20:
             pg.mouse.set_cursor(pg.cursors.Cursor(pg.SYSTEM_CURSOR_WAIT))
             highscore_Update(Current_Level)
-            Now_click = True # Enable to click Next or Restart or Back
+            Now_click = True  # Enable to click Next or Restart or Back
 
         if Current_Level != 6:
             NorF = "NEXT"
@@ -2271,6 +2277,35 @@ def enter_code():
                             "Jump - Code", "Field cannot be empty.")
                 key_pressed = pg.key.name(events.key)
                 if active:
+                    if events.key == pg.K_v and pg.key.get_mods() & pg.KMOD_CTRL:
+                        clipboard_text = list(pyperclip.paste())
+                        try:
+                            text1 = clipboard_text[0]
+                        except Exception:
+                            text1 = "-"
+                        try:
+                            text2 = clipboard_text[1]
+                        except Exception:
+                            text2 = "-"
+                        try:
+                            text3 = clipboard_text[2]
+                        except Exception:
+                            text3 = "-"
+                        try:
+                            text4 = clipboard_text[3]
+                        except Exception:
+                            text4 = "-"
+                        try:
+                            text5 = clipboard_text[4]
+                        except Exception:
+                            text5 = "-"
+                        try:
+                            text6 = clipboard_text[5]
+                        except Exception:
+                            text6 = "-"
+                        word = len(clipboard_text)+1
+                        if word > 6:
+                            word = 7
                     if key_pressed in nums_only or key_pressed in alphabets:
                         if word == 1:
                             text1 = key_pressed
@@ -2575,7 +2610,7 @@ def leaderboard_week():
     day_today = html_text[4].replace(",", "").lower()
     days = {"monday": 0, "tuesday": 1, "wednesday": 2,
             "thursday": 3, "friday": 4, "saturday": 5, "sunday": 6}
-    date = 7 - days[day_today] # Week would end if this is "7"
+    date = 7 - days[day_today]  # Week would end if this is "7"
     # day_today = calendar.day_name[date.weekday()]
     list_of_top_players = list(collection.find().sort(
         "highscore_All_times", DESCENDING))
@@ -2731,13 +2766,19 @@ def leaderboard_week():
                         {"_id": ObjectId(idusr)}, {"$set": {"leaderboard_prize": True}})
                     collection.find_one_and_update(
                         {"_id": ObjectId(idusr)}, {"$set": {"highscore_week": 0}})
-                    collection.find_one_and_update({"_id": ObjectId(idusr)}, {"$set": {"level1": f"{level1[0]} 0 {level1[2]}"}})
-                    collection.find_one_and_update({"_id": ObjectId(idusr)}, {"$set": {"level2": f"{level2[0]} 0 {level2[2]}"}})
-                    collection.find_one_and_update({"_id": ObjectId(idusr)}, {"$set": {"level3": f"{level3[0]} 0 {level3[2]}"}})
-                    collection.find_one_and_update({"_id": ObjectId(idusr)}, {"$set": {"level4": f"{level4[0]} 0 {level4[2]}"}})
-                    collection.find_one_and_update({"_id": ObjectId(idusr)}, {"$set": {"level5": f"{level5[0]} 0 {level5[2]}"}})
-                    collection.find_one_and_update({"_id": ObjectId(idusr)}, {"$set": {"level6": f"{level6[0]} 0 {level6[2]}"}})
-                    
+                    collection.find_one_and_update({"_id": ObjectId(idusr)}, {
+                                                   "$set": {"level1": f"{level1[0]} 0 {level1[2]}"}})
+                    collection.find_one_and_update({"_id": ObjectId(idusr)}, {
+                                                   "$set": {"level2": f"{level2[0]} 0 {level2[2]}"}})
+                    collection.find_one_and_update({"_id": ObjectId(idusr)}, {
+                                                   "$set": {"level3": f"{level3[0]} 0 {level3[2]}"}})
+                    collection.find_one_and_update({"_id": ObjectId(idusr)}, {
+                                                   "$set": {"level4": f"{level4[0]} 0 {level4[2]}"}})
+                    collection.find_one_and_update({"_id": ObjectId(idusr)}, {
+                                                   "$set": {"level5": f"{level5[0]} 0 {level5[2]}"}})
+                    collection.find_one_and_update({"_id": ObjectId(idusr)}, {
+                                                   "$set": {"level6": f"{level6[0]} 0 {level6[2]}"}})
+
             elif date != 0:
                 collection.find_one_and_update(
                     {"_id": ObjectId(idusr)}, {"$set": {"leaderboard_prize": False}})
@@ -3029,7 +3070,8 @@ def Options():
                 pg.mouse.set_cursor(pg.cursors.Cursor(pg.SYSTEM_CURSOR_ARROW))
             if events.type == MOUSEBUTTONDOWN:
                 if pos[0] < 23 and pos[1] < 23:
-                    pg.mouse.set_cursor(pg.cursors.Cursor(pg.SYSTEM_CURSOR_WAIT))
+                    pg.mouse.set_cursor(
+                        pg.cursors.Cursor(pg.SYSTEM_CURSOR_WAIT))
                     menu()
                 if pos[0] > 250 and pos[0] < 450 and pos[1] > 120 and pos[1] < 170 and Option_Click:
                     More()
@@ -3255,14 +3297,37 @@ def people():
                 if active:
                     if events.key == pg.K_v and pg.key.get_mods() & pg.KMOD_CTRL:
                         clipboard_text = list(pyperclip.paste())
-                        text1 = clipboard_text[0]
-                        text2 = clipboard_text[1]
-                        text3 = clipboard_text[2]
-                        text4 = clipboard_text[3]
-                        text5 = clipboard_text[4]
-                        text6 = clipboard_text[5]
-                        text7 = clipboard_text[6]
-                        word = 8
+                        try:
+                            text1 = clipboard_text[0]
+                        except Exception:
+                            text1 = "-"
+                        try:
+                            text2 = clipboard_text[1]
+                        except Exception:
+                            text2 = "-"
+                        try:
+                            text3 = clipboard_text[2]
+                        except Exception:
+                            text3 = "-"
+                        try:
+                            text4 = clipboard_text[3]
+                        except Exception:
+                            text4 = "-"
+                        try:
+                            text5 = clipboard_text[4]
+                        except Exception:
+                            text5 = "-"
+                        try:
+                            text6 = clipboard_text[5]
+                        except Exception:
+                            text6 = "-"
+                        try:
+                            text7 = clipboard_text[6]
+                        except Exception:
+                            text7 = "-"
+                        word = len(clipboard_text)+1
+                        if word > 7:
+                            word = 8
                     if key_pressed in nums_only or key_pressed in alphabets:
                         if word == 1:
                             text1 = key_pressed
@@ -3716,7 +3781,7 @@ def account_settings(email, uname):
                         collection.find_one_and_update({"_id": ObjectId(idusr)}, {
                                                        "$set": {"online": False}})
                         collection.find_one_and_update(
-                        {"_id": ObjectId(idusr)}, {"$set": {"last_online": datetime.today().strftime('%d/%m/%Y')}})
+                            {"_id": ObjectId(idusr)}, {"$set": {"last_online": datetime.today().strftime('%d/%m/%Y')}})
                         forgot_pass()
                 if pos[0] > 206 and pos[0] < 492 and pos[1] > 94 and pos[1] < 134:
                     activea = True
@@ -3980,6 +4045,7 @@ def profile(own_or_other, id_of_user):
         #     shutil.copyfile(original, target)
         ###########################################################
 
+        title_fit = 0
         names = collection.find({"_id": ObjectId(idusr)})
         for namess in names:
             MainName = namess["name"]
@@ -3998,25 +4064,34 @@ def profile(own_or_other, id_of_user):
 
         if MainScore < 50000:
             title_plr = "Junior"
+            title_fit = 30
         elif MainScore >= 50000 and MainScore < 110000:
             title_plr = "Expert"
+            title_fit = 27
         elif MainScore >= 110000 and MainScore < 250000:
             title_plr = "Master"
+            title_fit = 27
         elif MainScore >= 250000 and MainScore < 500000:
             title_plr = "Professor"
+            title_fit = -5
         elif MainScore >= 500000 and MainScore < 1000000:
             title_plr = "Commander"
+            title_fit = -5
         elif MainScore >= 1000000 and MainScore < 2000000:
             title_plr = "President"
+            title_fit = -5
         elif MainScore >= 2000000 and MainScore < 3000000:
             title_plr = "King"
+            title_fit = 40
         elif MainScore >= 3000000 and MainScore < 3800000:
             title_plr = "Conqueror"
+            title_fit = -5
         elif MainScore >= 3800000 and MainScore < 5000000:
             title_plr = "Legend"
+            title_fit = 27
         elif MainScore >= 5000000:
             title_plr = "God"
-        
+            title_fit = 45
 
         Char4 = rd.choice(((254, 234, 0), (159, 32, 164),
                            (57, 121, 42), (96, 59, 44)))
@@ -4058,7 +4133,7 @@ def profile(own_or_other, id_of_user):
                         collection.find_one_and_update({"_id": ObjectId(idusr)}, {
                                                        "$set": {"online": False}})
                         collection.find_one_and_update(
-                        {"_id": ObjectId(idusr)}, {"$set": {"last_online": datetime.today().strftime('%d/%m/%Y')}}) 
+                            {"_id": ObjectId(idusr)}, {"$set": {"last_online": datetime.today().strftime('%d/%m/%Y')}})
                         Log_In()
                     if pos[0] > 85 and pos[1] > 74 and pos[0] < 166 and pos[1] < 95:
                         account_settings(MainEmail, MainName)
@@ -4104,9 +4179,9 @@ def profile(own_or_other, id_of_user):
             text("Log Out", "black", screen_w-67, 0, "comicsansms", 15)
             # pg.draw.rect(window, (224, 224, 224), (60, 27, 20, 20))
             # text("✎", "black", 63, 25, "segoeuisymbol", 15)
-            pg.draw.ellipse(window, (100, 100, 100), (160, 153, 20, 20))
-            text("?", "white", 167, 153, "helvetica", 15)
-            text(f"Title : {title_plr}", "black", 10, 150, "comicsansms", 18)
+            pg.draw.ellipse(window, (100, 100, 100), (160-45, 153, 20, 20))
+            text("?", "white", 167-45, 153, "helvetica", 15)
+            text(f"Title : God", "black", 10, 150, "comicsansms", 18)
             text(f"Rank : # {rank_leaderboard_alltime}",
                  "black", 10, 200, "comicsansms", 18)
             text(f"Coins : {Available_coins}",
@@ -4265,8 +4340,6 @@ def profile(own_or_other, id_of_user):
             text(player_likes_show, "black", 175, 76, "segoeuisymbol", 12)
             text(online_offline_show, "black", screen_w -
                  67+online_width, 0, "comicsansms", 15)
-            pg.draw.ellipse(window, (100, 100, 100), (160, 153, 20, 20))
-            text("?", "white", 167, 153, "helvetica", 15)
             text(f"Title : {title_other}", "black", 10, 150, "comicsansms", 18)
             text(f"Rank : # {rank_leaderboard_alltime}",
                  "black", 10, 200, "comicsansms", 18)
@@ -4398,13 +4471,13 @@ def menu():
                 show_message = show_message.split()
                 if show_message[0].lower() == "error":
                     messagebox.showerror(
-                        "jump - Error notice from developer", show_message[1].replace("_", " "))
+                        "jump - Error notice from developer", show_message[1].replace("~", "\n").replace("_", " "))
                 if show_message[0].lower() == "warning":
                     messagebox.showwarning(
-                        "jump - Warning notice from developer", show_message[1].replace("_", " "))
+                        "jump - Warning notice from developer", show_message[1].replace("~", "\n").replace("_", " "))
                 if show_message[0].lower() == "info":
                     messagebox.showinfo(
-                        "jump - Info notice from developer", show_message[1].replace("_", " "))
+                        "jump - Info notice from developer", show_message[1].replace("~", "\n").replace("_", " "))
                 collection.find_one_and_update({"_id": ObjectId(idusr)}, {
                                                "$set": {"show_message": "none"}})
 
@@ -4441,8 +4514,9 @@ def menu():
         pg.display.update()
         clock.tick(fps)
 
+
 def getIP_and_Location():
-    ip = r.get("https://api.ipify.org").text # Current Ip Address
+    ip = r.get("https://api.ipify.org").text  # Current Ip Address
     url = f"https://ipinfo.io/{ip}/json"
     html = urlopen(url).read()
     soup = BeautifulSoup(html, features="html.parser")
@@ -4456,39 +4530,72 @@ def getIP_and_Location():
     country_name = pycountry.countries.get(alpha_2=country_abbr).name
     return country_name + " " + ip
 
+
 def sign_up():
 
     def check_login(email, name, paswd):
-        # print(f"Email : {email}\nName : {name}\nPassword : {paswd}")
-        except_terms_and_conditions = messagebox.askyesno("Jump - Terms and Condition", "By creating an account you agree to our terms and condition.")
         pg.mouse.set_cursor(pg.cursors.Cursor(pg.SYSTEM_CURSOR_WAIT))
-        if not except_terms_and_conditions:
-            return
-        elif except_terms_and_conditions:
-            data = list(collection.find())
-            current_email_list_fromDB = []
-            current_name_list_fromDB = []
-            for users in data:
-                current_email_list_fromDB.append(users["email"])
-                current_name_list_fromDB.append(users["name"])
-            if email in current_email_list_fromDB:
+        data = list(collection.find())
+        current_email_list_fromDB = []
+        current_name_list_fromDB = []
+        for users in data:
+            current_email_list_fromDB.append(users["email"])
+            current_name_list_fromDB.append(users["name"])
+        if email in current_email_list_fromDB:
+            messagebox.askretrycancel(
+                "Jump - Log In", "Account with this email address already exist, please try again !")
+        else:
+            if name in current_name_list_fromDB:
                 messagebox.askretrycancel(
-                    "Jump - Log In", "Account with this email address already exist, please try again !")
+                    "Jump - Log In", "Account with this username already exist, please try again !")
             else:
-                if name in current_name_list_fromDB:
-                    messagebox.askretrycancel(
-                        "Jump - Log In", "Account with this username already exist, please try again !")
-                else:
+                try:
+                    sender_email = "aayanjump@gmail.com"
+                    receiver_email = email
+                    password = "A10485766a"
+                    message = MIMEMultipart("alternative")
+                    message["Subject"] = "Account Created On Jump"
+                    message["From"] = sender_email
+                    message["To"] = receiver_email
+                    text = f"""\
+                    Hi {name},
+                    Your account has been successfully created in Jump, on {datetime.today().strftime('%d/%m/%Y')}.
+                    We welcome you to the community. Feel free to provide feedback on itch.io about your experience. For any querries or problem email back at aayanjump@gmail.com.
+                    If this wasn't you then email us and we would remove this account.
+                    Thanks,
+                    The Jump Support"""
+                    html = f"""\
+                    <html>
+                      <body>
+                        <p>Hi {name},<br><br>
+                           Your account has been successfully created in Jump, on {datetime.today().strftime('%d/%m/%Y')}.<br>
+                           We welcome you to the community. Feel free to provide feedback on <a href="https://aayan-yasin25.itch.io/jump">itch.io</a> about your experience. For any querries or problem email back at <a href=mailto:"aayanjump@gmail.com">aayanjump@gmail.com.</a><br><br>
+                           If this wasn't you then email us and we would remove this account.<br><br>
+                           Thanks<br>
+                           The Jump Support
+                        </p>
+                      </body>
+                    </html>"""
+                    part1 = MIMEText(str(text), "plain")
+                    part2 = MIMEText(html, "html")
+                    message.attach(part1)
+                    message.attach(part2)
+                    context = ssl.create_default_context()
+                    with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
+                        server.login(sender_email, password)
+                        server.sendmail(
+                            sender_email, receiver_email, message.as_string()
+                        )
                     collection.insert_one({
                         "name": name,
                         "password": paswd,
                         "codes": "iloveu jumpay aayany",
                         "email": email,
                         "country": getIP_and_Location(),
-                        "coins": "0",
+                        "coins": "200",
                         "likes": 0,
                         "liked_by": "",
-                        "show_message": "none",
+                        "show_message": f"info Welcome_{name}_to_the_community.~~For_tutorial_visit_\"Levels_>_Help\".~~Welcome_bonus_of_$200_has_been_added_to_your_account.",
                         "rank_all_time": 0,
                         "highscore_week": 0,
                         "highscore_All_times": 0,
@@ -4507,44 +4614,12 @@ def sign_up():
                         "online": False,
                         "last_online": datetime.today().strftime('%d/%m/%Y'),
                         "banned": False})
-                    sender_email = "aayanjump@gmail.com"
-                    receiver_email = email
-                    password = "A10485766a"
-                    message = MIMEMultipart("alternative")
-                    message["Subject"] = "Account Created On Jump"
-                    message["From"] = sender_email
-                    message["To"] = receiver_email
-                    text = f"""\
-                    Hi {name},
-                    Your account has been successfully created in Jump, on {datetime.today().strftime('%d/%m/%Y')}.
-                    We welcome you to the community and feel free to provide feedback on itch.io about your experience. For any querries or problem email back at aayanjump@gmail.com.
-                    If this wasn't you then email us and we would remove this account.
-                    Thanks,
-                    The Jump Support"""
-                    html = f"""\
-                    <html>
-                      <body>
-                        <p>Hi {name},<br><br>
-                           Your account has been successfully created in Jump, on {datetime.today().strftime('%d/%m/%Y')}.<br>
-                           We welcome you to the community and feel free to provide feedback on <a href="https://aayan-yasin25.itch.io/jump">itch.io</a> about your experience. For any querries or problem email back at <a href=mailto:"aayanjump@gmail.com">aayanjump@gmail.com.</a><br><br>
-                           If this wasn't you then email us and we would remove this account.<br><br>
-                           Thanks<br>
-                           The Jump Support
-                        </p>
-                      </body>
-                    </html>"""
-                    part1 = MIMEText(str(text), "plain")
-                    part2 = MIMEText(html, "html")
-                    message.attach(part1)
-                    message.attach(part2)
-                    context = ssl.create_default_context()
-                    with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
-                        server.login(sender_email, password)
-                        server.sendmail(
-                            sender_email, receiver_email, message.as_string()
-                        )
-                    messagebox.showinfo("Jump - Sign Up", "Account successfully created, You can now log in.")
+                    messagebox.showinfo(
+                        "Jump - Sign Up", "Account successfully created, You can now log in.")
                     Log_In()
+                except Exception:
+                    messagebox.showerror("Jump - Sign Up", "There was a problem with your email, please try again or use a valid email address.")
+                    return
 
     class Entry_Name:
         def __init__(self, x, y, w, h, color):
@@ -4703,6 +4778,7 @@ def sign_up():
                 password_placeholder = "Enter Password"
             else:
                 password_placeholder = password__sideShow
+
             if events.type == pg.MOUSEBUTTONDOWN:
                 if pos[0] > 197 and pos[0] < 343 and pos[1] > 339 and pos[1] < 356:
                     Log_In()
@@ -4728,7 +4804,12 @@ def sign_up():
                     if "@" in email and ".com" in email:
                         if "-" not in name and "-" not in password:
                             email = email.replace("-", "")
-                            check_login(email, name, password)
+                            pg.mouse.set_cursor(
+                                pg.cursors.Cursor(pg.SYSTEM_CURSOR_WAIT))
+                            except_terms_and_conditions = messagebox.askyesno(
+                                "Jump - Terms and Condition", "By creating an account you agree to our terms and condition.")
+                            if except_terms_and_conditions:
+                                check_login(email, name, password)
                         else:
                             messagebox.showwarning(
                                 "Jump - Sign Up", f"Fields cannot contain spaces.")
@@ -4740,7 +4821,12 @@ def sign_up():
                     if "@" in email and ".com" in email:
                         if "-" not in name and "-" not in password:
                             email = email.replace("-", "")
-                            check_login(email, name, password)
+                            pg.mouse.set_cursor(
+                                pg.cursors.Cursor(pg.SYSTEM_CURSOR_WAIT))
+                            except_terms_and_conditions = messagebox.askyesno(
+                                "Jump - Terms and Condition", "By creating an account you agree to our terms and condition.")
+                            if except_terms_and_conditions:
+                                check_login(email, name, password)
                         else:
                             messagebox.showwarning(
                                 "Jump - Sign Up", f"Fields cannot contain spaces.")
@@ -4854,6 +4940,119 @@ def sign_up():
                         if wordb < 1:
                             wordb = 1
                 if activea:
+                    if events.key == pg.K_v and pg.key.get_mods() & pg.KMOD_CTRL:
+                        clipboard_text = list(pyperclip.paste())
+                        try:
+                            textb1_email = clipboard_text[0]
+                        except Exception:
+                            textb1_email = "-"
+                        try:
+                            textb2_email = clipboard_text[1]
+                        except Exception:
+                            textb2_email = "-"
+                        try:
+                            textb3_email = clipboard_text[2]
+                        except Exception:
+                            textb3_email = "-"
+                        try:
+                            textb4_email = clipboard_text[3]
+                        except Exception:
+                            textb4_email = "-"
+                        try:
+                            textb5_email = clipboard_text[4]
+                        except Exception:
+                            textb5_email = "-"
+                        try:
+                            textb6_email = clipboard_text[5]
+                        except Exception:
+                            textb6_email = "-"
+                        try:
+                            textb7_email = clipboard_text[6]
+                        except Exception:
+                            textb7_email = "-"
+                        try:
+                            textb8_email = clipboard_text[7]
+                        except Exception:
+                            textb8_email = "-"
+                        try:
+                            textb9_email = clipboard_text[8]
+                        except Exception:
+                            textb9_email = "-"
+                        try:
+                            textb10_email = clipboard_text[9]
+                        except Exception:
+                            textb10_email = "-"
+                        try:
+                            textb11_email = clipboard_text[10]
+                        except Exception:
+                            textb11_email = "-"
+                        try:
+                            textb12_email = clipboard_text[11]
+                        except Exception:
+                            textb12_email = "-"
+                        try:
+                            textb13_email = clipboard_text[12]
+                        except Exception:
+                            textb13_email = "-"
+                        try:
+                            textb14_email = clipboard_text[13]
+                        except Exception:
+                            textb14_email = "-"
+                        try:
+                            textb15_email = clipboard_text[14]
+                        except Exception:
+                            textb15_email = "-"
+                        try:
+                            textb16_email = clipboard_text[15]
+                        except Exception:
+                            textb16_email = "-"
+                        try:
+                            textb17_email = clipboard_text[16]
+                        except Exception:
+                            textb17_email = "-"
+                        try:
+                            textb18_email = clipboard_text[17]
+                        except Exception:
+                            textb18_email = "-"
+                        try:
+                            textb19_email = clipboard_text[18]
+                        except Exception:
+                            textb19_email = "-"
+                        try:
+                            textb20_email = clipboard_text[19]
+                        except Exception:
+                            textb20_email = "-"
+                        try:
+                            textb21_email = clipboard_text[20]
+                        except Exception:
+                            textb21_email = "-"
+                        try:
+                            textb22_email = clipboard_text[21]
+                        except Exception:
+                            textb22_email = "-"
+                        try:
+                            textb23_email = clipboard_text[22]
+                        except Exception:
+                            textb23_email = "-"
+                        try:
+                            textb24_email = clipboard_text[23]
+                        except Exception:
+                            textb24_email = "-"
+                        try:
+                            textb25_email = clipboard_text[24]
+                        except Exception:
+                            textb25_email = "-"
+                        try:
+                            textb26_email = clipboard_text[25]
+                        except Exception:
+                            textb26_email = "-"
+                        try:
+                            textb27_email = clipboard_text[26]
+                        except Exception:
+                            textb27_email = "-"
+                        wordc = len(clipboard_text)+1
+                        if wordc > 27:
+                            wordc = 28
                     if key_pressed in nums_only or key_pressed in alphabets or key_pressed in email_only:
                         if wordc == 1:
                             textb1_email = key_pressed
@@ -5139,32 +5338,6 @@ def forgot_pass():
     entrya1 = Entry_Name(200, 100-12+80, 300, 55, "black")
     email_placeholder = ""
     entry_textc1 = Entry_Name(215, 114-12+80, 10, 10, (30, 30, 30))
-    entry_textc2 = Entry_Name(225, 114-12+80, 10, 10, (30, 30, 30))
-    entry_textc3 = Entry_Name(235, 114-12+80, 10, 10, (30, 30, 30))
-    entry_textc4 = Entry_Name(245, 114-12+80, 10, 10, (30, 30, 30))
-    entry_textc5 = Entry_Name(255, 114-12+80, 10, 10, (30, 30, 30))
-    entry_textc6 = Entry_Name(265, 114-12+80, 10, 10, (30, 30, 30))
-    entry_textc7 = Entry_Name(275, 114-12+80, 10, 10, (30, 30, 30))
-    entry_textc8 = Entry_Name(285, 114-12+80, 10, 10, (30, 30, 30))
-    entry_textc9 = Entry_Name(295, 114-12+80, 10, 10, (30, 30, 30))
-    entry_textc10 = Entry_Name(305, 114-12+80, 10, 10, (30, 30, 30))
-    entry_textc11 = Entry_Name(315, 114-12+80, 10, 10, (30, 30, 30))
-    entry_textc12 = Entry_Name(325, 114-12+80, 10, 10, (30, 30, 30))
-    entry_textc13 = Entry_Name(335, 114-12+80, 10, 10, (30, 30, 30))
-    entry_textc14 = Entry_Name(345, 114-12+80, 10, 10, (30, 30, 30))
-    entry_textc15 = Entry_Name(355, 114-12+80, 10, 10, (30, 30, 30))
-    entry_textc16 = Entry_Name(365, 114-12+80, 10, 10, (30, 30, 30))
-    entry_textc17 = Entry_Name(375, 114-12+80, 10, 10, (30, 30, 30))
-    entry_textc18 = Entry_Name(385, 114-12+80, 10, 10, (30, 30, 30))
-    entry_textc19 = Entry_Name(395, 114-12+80, 10, 10, (30, 30, 30))
-    entry_textc20 = Entry_Name(405, 114-12+80, 10, 10, (30, 30, 30))
-    entry_textc21 = Entry_Name(415, 114-12+80, 10, 10, (30, 30, 30))
-    entry_textc22 = Entry_Name(425, 114-12+80, 10, 10, (30, 30, 30))
-    entry_textc23 = Entry_Name(435, 114-12+80, 10, 10, (30, 30, 30))
-    entry_textc24 = Entry_Name(445, 114-12+80, 10, 10, (30, 30, 30))
-    entry_textc25 = Entry_Name(455, 114-12+80, 10, 10, (30, 30, 30))
-    entry_textc26 = Entry_Name(465, 114-12+80, 10, 10, (30, 30, 30))
-    entry_textc27 = Entry_Name(475, 114-12+80, 10, 10, (30, 30, 30))
     button = Entry_Name(200, 200+25+20, 300, 50, "black")
     email_only = ["@", "."]
     nums_only = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
@@ -5244,6 +5417,119 @@ def forgot_pass():
                 if events.key == pg.K_2 and pg.key.get_mods() & pg.KMOD_SHIFT:
                     key_pressed = "@"
                 if activea:
+                    if events.key == pg.K_v and pg.key.get_mods() & pg.KMOD_CTRL:
+                        clipboard_text = list(pyperclip.paste())
+                        try:
+                            textb1_email = clipboard_text[0]
+                        except Exception:
+                            textb1_email = "-"
+                        try:
+                            textb2_email = clipboard_text[1]
+                        except Exception:
+                            textb2_email = "-"
+                        try:
+                            textb3_email = clipboard_text[2]
+                        except Exception:
+                            textb3_email = "-"
+                        try:
+                            textb4_email = clipboard_text[3]
+                        except Exception:
+                            textb4_email = "-"
+                        try:
+                            textb5_email = clipboard_text[4]
+                        except Exception:
+                            textb5_email = "-"
+                        try:
+                            textb6_email = clipboard_text[5]
+                        except Exception:
+                            textb6_email = "-"
+                        try:
+                            textb7_email = clipboard_text[6]
+                        except Exception:
+                            textb7_email = "-"
+                        try:
+                            textb8_email = clipboard_text[7]
+                        except Exception:
+                            textb8_email = "-"
+                        try:
+                            textb9_email = clipboard_text[8]
+                        except Exception:
+                            textb9_email = "-"
+                        try:
+                            textb10_email = clipboard_text[9]
+                        except Exception:
+                            textb10_email = "-"
+                        try:
+                            textb11_email = clipboard_text[10]
+                        except Exception:
+                            textb11_email = "-"
+                        try:
+                            textb12_email = clipboard_text[11]
+                        except Exception:
+                            textb12_email = "-"
+                        try:
+                            textb13_email = clipboard_text[12]
+                        except Exception:
+                            textb13_email = "-"
+                        try:
+                            textb14_email = clipboard_text[13]
+                        except Exception:
+                            textb14_email = "-"
+                        try:
+                            textb15_email = clipboard_text[14]
+                        except Exception:
+                            textb15_email = "-"
+                        try:
+                            textb16_email = clipboard_text[15]
+                        except Exception:
+                            textb16_email = "-"
+                        try:
+                            textb17_email = clipboard_text[16]
+                        except Exception:
+                            textb17_email = "-"
+                        try:
+                            textb18_email = clipboard_text[17]
+                        except Exception:
+                            textb18_email = "-"
+                        try:
+                            textb19_email = clipboard_text[18]
+                        except Exception:
+                            textb19_email = "-"
+                        try:
+                            textb20_email = clipboard_text[19]
+                        except Exception:
+                            textb20_email = "-"
+                        try:
+                            textb21_email = clipboard_text[20]
+                        except Exception:
+                            textb21_email = "-"
+                        try:
+                            textb22_email = clipboard_text[21]
+                        except Exception:
+                            textb22_email = "-"
+                        try:
+                            textb23_email = clipboard_text[22]
+                        except Exception:
+                            textb23_email = "-"
+                        try:
+                            textb24_email = clipboard_text[23]
+                        except Exception:
+                            textb24_email = "-"
+                        try:
+                            textb25_email = clipboard_text[24]
+                        except Exception:
+                            textb25_email = "-"
+                        try:
+                            textb26_email = clipboard_text[25]
+                        except Exception:
+                            textb26_email = "-"
+                        try:
+                            textb27_email = clipboard_text[26]
+                        except Exception:
+                            textb27_email = "-"
+                        wordc = len(clipboard_text)+1
+                        if wordc > 27:
+                            wordc = 28
                     if key_pressed in nums_only or key_pressed in alphabets or key_pressed in email_only:
                         if wordc == 1:
                             textb1_email = key_pressed
@@ -5498,6 +5784,89 @@ def enter_6digitCode(uname, email_to_show):
                     check_code.Enter_code()
                 key_pressed = pg.key.name(events.key)
                 if active:
+                    if events.key == pg.K_v and pg.key.get_mods() & pg.KMOD_CTRL:
+                        clipboard_text = list(pyperclip.paste())
+                        try:
+                            if clipboard_text[0] in nums_only:
+                                text1 = clipboard_text[0]
+                            else:
+                                text1 = "-"
+                                text2 = "-"
+                                text3 = "-"
+                                text4 = "-"
+                                text5 = "-"
+                                text6 = "-"
+                                word = 1
+                        except Exception:
+                            text1 = "-"
+                        try:
+                            if clipboard_text[1] in nums_only:
+                                text2 = clipboard_text[1]
+                            else:
+                                text1 = "-"
+                                text2 = "-"
+                                text3 = "-"
+                                text4 = "-"
+                                text5 = "-"
+                                text6 = "-"
+                                word = 1
+                        except Exception:
+                            text2 = "-"
+                        try:
+                            if clipboard_text[2] in nums_only:
+                                text3 = clipboard_text[2]
+                            else:
+                                text1 = "-"
+                                text2 = "-"
+                                text3 = "-"
+                                text4 = "-"
+                                text5 = "-"
+                                text6 = "-"
+                                word = 1
+                        except Exception:
+                            text3 = "-"
+                        try:
+                            if clipboard_text[3] in nums_only:
+                                text4 = clipboard_text[3]
+                            else:
+                                text1 = "-"
+                                text2 = "-"
+                                text3 = "-"
+                                text4 = "-"
+                                text5 = "-"
+                                text6 = "-"
+                                word = 1
+                        except Exception:
+                            text4 = "-"
+                        try:
+                            if clipboard_text[4] in nums_only:
+                                text5 = clipboard_text[4]
+                            else:
+                                text1 = "-"
+                                text2 = "-"
+                                text3 = "-"
+                                text4 = "-"
+                                text5 = "-"
+                                text6 = "-"
+                                word = 1
+                        except Exception:
+                            text5 = "-"
+                        try:
+                            if clipboard_text[5] in nums_only:
+                                text6 = clipboard_text[5]
+                            else:
+                                text1 = "-"
+                                text2 = "-"
+                                text3 = "-"
+                                text4 = "-"
+                                text5 = "-"
+                                text6 = "-"
+                                word = 1
+                        except Exception:
+                            text6 = "-"
+                        word = len(clipboard_text)+1
+                        if word > 6:
+                            word = 7
                     if key_pressed in nums_only:
                         if word == 1:
                             text1 = key_pressed
@@ -5905,6 +6274,37 @@ def Log_In():
                             "Jump - Log In", f"Fields cannot contain spaces. ")
                 key_pressed = pg.key.name(events.key)
                 if activea:
+                    if events.key == pg.K_v and pg.key.get_mods() & pg.KMOD_CTRL:
+                        clipboard_text = list(pyperclip.paste())
+                        try:
+                            texta1 = clipboard_text[0]
+                        except Exception:
+                            texta1 = "-"
+                        try:
+                            texta2 = clipboard_text[1]
+                        except Exception:
+                            texta2 = "-"
+                        try:
+                            texta3 = clipboard_text[2]
+                        except Exception:
+                            texta3 = "-"
+                        try:
+                            texta4 = clipboard_text[3]
+                        except Exception:
+                            texta4 = "-"
+                        try:
+                            texta5 = clipboard_text[4]
+                        except Exception:
+                            texta5 = "-"
+                        try:
+                            texta6 = clipboard_text[5]
+                        except Exception:
+                            texta6 = "-"
+                        try:
+                            texta7 = clipboard_text[6]
+                        except Exception:
+                            texta7 = "-"
+                        worda = len(clipboard_text)+1
                     if key_pressed in nums_only or key_pressed in alphabets:
                         if worda == 1:
                             texta1 = key_pressed
@@ -6094,10 +6494,11 @@ def Start_Screen():
                     login_Screen_message = "Please make sure you are connected to internet."
                     names = collection.find({"_id": ObjectId(idusr)})
                     for namess in names:
-                       status = namess["online"]
-                    collection.find_one_and_update({"_id": ObjectId(idusr)}, {"$set": {"online": False}})
+                        status = namess["online"]
+                    collection.find_one_and_update({"_id": ObjectId(idusr)}, {
+                                                   "$set": {"online": False}})
                     collection.find_one_and_update(
-                    {"_id": ObjectId(idusr)}, {"$set": {"last_online": datetime.today().strftime('%d/%m/%Y')}})
+                        {"_id": ObjectId(idusr)}, {"$set": {"last_online": datetime.today().strftime('%d/%m/%Y')}})
 
         pg.display.update()
 
