@@ -10,7 +10,7 @@ import time as t
 import webbrowser as wb
 from bs4 import BeautifulSoup
 from urllib.request import Request, urlopen
-from pymongo import MongoClient, DESCENDING
+from pymongo import MongoClient, DESCENDING, message
 from bson.objectid import ObjectId
 from datetime import date, datetime
 from numerize import numerize
@@ -27,7 +27,9 @@ pg.init()
 root = Tk()
 root.wm_withdraw()
 
-musicFile = "assets\\background.mp3"
+musicFile = "assets\\sounds\\background.mp3"
+CoinCollectSoundfxFile = "assets\\sounds\\Coin_Collect_Sound.mp3"
+JumpSoundfxFile = "assets\\sounds\\JumpOnLandSound.mp3"
 UserNameSavedFile = "assets\\UserCreds.dat"
 IconFile = "assets\JUMP-ICON.png"
 # ProfileImageFile = "assets\PROFILE-IMAGE.png"
@@ -46,6 +48,7 @@ except Exception:
 
 Play_Again = None
 Current_Level = None
+Soundfx = True
 
 try:
     pg.mixer.music.load(musicFile)
@@ -266,41 +269,58 @@ def Game_over():
                 pg.mouse.set_cursor(pg.cursors.Cursor(pg.SYSTEM_CURSOR_ARROW))
             if eventsGO.type == pg.MOUSEBUTTONUP:
                 if pos[0] > 250 and pos[0] < 360 and pos[1] > 295 and pos[1] < 345 and Now_click:
-                    pg.mouse.set_cursor(
-                        pg.cursors.Cursor(pg.SYSTEM_CURSOR_WAIT))
-                    collection.find_one_and_update({"_id": ObjectId(idusr)}, {
-                                                   "$set": {"coins": str(int(currentC)+int(coinCollected))}})
+                    if playing_online_offline:
+                        pg.mouse.set_cursor(
+                            pg.cursors.Cursor(pg.SYSTEM_CURSOR_WAIT))
+                        collection.find_one_and_update({"_id": ObjectId(idusr)}, {
+                                                       "$set": {"coins": str(int(currentC)+int(coinCollected))}})
                     Play_Again()
                 if pos[0] < 23 and pos[1] < 23 and Now_click:
-                    menu()
+                    if playing_online_offline:
+                        pg.mouse.set_cursor(
+                            pg.cursors.Cursor(pg.SYSTEM_CURSOR_WAIT))
+                        menu()
+                    elif not playing_online_offline:
+                        Choose_Level(playing_online_offline)
                 if pos[0] > 312 and pos[0] < 452 and pos[1] > 295 and pos[1] < 345 and Now_click:
                     if Current_Level == 1:
-                        if not eval(Level2[0]):
-                            level_unlock_gameover(1)
+                        if playing_online_offline:
+                            if not eval(Level2[0]):
+                                level_unlock_gameover(1)
                         Level_2()
                     elif Current_Level == 2:
-                        if not eval(Level3[0]):
-                            level_unlock_gameover(2)
+                        if playing_online_offline:
+                            if not eval(Level3[0]):
+                                level_unlock_gameover(2)
                         Level_3()
                     elif Current_Level == 3:
-                        if not eval(Level4[0]):
-                            level_unlock_gameover(3)
+                        if playing_online_offline:
+                            if not eval(Level4[0]):
+                                level_unlock_gameover(3)
                         Level_4()
                     elif Current_Level == 4:
-                        if not eval(Level5[0]):
-                            level_unlock_gameover(4)
+                        if playing_online_offline:
+                            if not eval(Level5[0]):
+                                level_unlock_gameover(4)
                         Level_5()
                     elif Current_Level == 5:
-                        if not eval(Level6[0]):
-                            level_unlock_gameover(5)
+                        if playing_online_offline:
+                            if not eval(Level6[0]):
+                                level_unlock_gameover(5)
                         Level_6()
                     elif Current_Level == 6:
-                        menu()
+                        if playing_online_offline:
+                            pg.mouse.set_cursor(
+                                pg.cursors.Cursor(pg.SYSTEM_CURSOR_WAIT))
+                            menu()
+                        elif not playing_online_offline:
+                            Choose_Level(playing_online_offline)
 
         if time_to_update == 20:
-            pg.mouse.set_cursor(pg.cursors.Cursor(pg.SYSTEM_CURSOR_WAIT))
-            highscore_Update(Current_Level)
-            Now_click = True  # Enable to click Next or Restart or Back
+            if playing_online_offline:
+                pg.mouse.set_cursor(pg.cursors.Cursor(pg.SYSTEM_CURSOR_WAIT))
+                highscore_Update(Current_Level)
+            Now_click = True  # Enable to click Next, Restart or Back
 
         if Current_Level != 6:
             NorF = "NEXT"
@@ -333,6 +353,10 @@ def Game_over():
 
 
 def pause(crnt_lvl):
+    if playing_online_offline:
+        back_to_menu_or_levelmenu = "M e n u"
+    elif not playing_online_offline:
+        back_to_menu_or_levelmenu = "B A C K"
     while True:
         window.fill((224, 224, 224))
         for events in pg.event.get():
@@ -348,7 +372,12 @@ def pause(crnt_lvl):
                     confirm_restart1 = messagebox.askokcancel(
                         "Jump - Back to menu", "Are you sure you want to quit ?\nYou will loose all your progress.")
                     if confirm_restart1:
-                        menu()
+                        if playing_online_offline:
+                            pg.mouse.set_cursor(
+                                pg.cursors.Cursor(pg.SYSTEM_CURSOR_WAIT))
+                            menu()
+                        elif not playing_online_offline:
+                            Choose_Level(playing_online_offline)
                 if pos[0] < 23 and pos[1] < 23:
                     return
 
@@ -358,7 +387,8 @@ def pause(crnt_lvl):
         pg.draw.rect(window, (0, 0, 0), (screen_w/2.6, 236, 155, 35))
         text("Restart", (255, 255, 255), screen_w/2.34+3, 240, "corbel", 30)
         pg.draw.rect(window, (0, 0, 0), (screen_w/2.6, 329, 155, 35))
-        text("M e n u", (255, 255, 255), screen_w/2.32, 333, "corbel", 30)
+        text(back_to_menu_or_levelmenu, (255, 255, 255),
+             screen_w/2.32, 333, "corbel", 30)
         pg.draw.rect(window, (172, 172, 172), (0, 0, 23, 23))
         text("<", (0, 0, 0), 5, -1, "helvetica", 20)
         pg.display.update()
@@ -380,8 +410,6 @@ def restart(crnt_level):
             Level_5()
         if crnt_level == 6:
             Level_6()
-    else:
-        return
 
 
 def Level_1():
@@ -430,6 +458,7 @@ def Level_1():
     time = 0
     sec_1 = 0
     started_playing = False
+    play_jump_sfx = False
     fps = 30
 
     clock = pg.time.Clock()
@@ -456,6 +485,7 @@ def Level_1():
                 quit_game()
             if events.type == pg.KEYDOWN:
                 if events.key == pg.K_UP or events.key == pg.K_w or events.key == pg.K_SPACE:
+                    play_jump_sfx = True
                     V_Y = jump
             posMain = pg.mouse.get_pos()
             if posMain[0] > 660 and posMain[1] > 380 and posMain[0] < 677 and posMain[1] < screen_h or posMain[0] > 678 and posMain[1] > 380 and posMain[0] < screen_w and posMain[1] < screen_h:
@@ -546,7 +576,16 @@ def Level_1():
         if P_Y <= 200:
             V_Y = -jump
         if P_Y >= 270:
+            if play_jump_sfx:
+                if Soundfx:
+                    try:
+                        jumpfx = pg.mixer.Sound(JumpSoundfxFile)
+                        jumpfx.set_volume(0.25)
+                        pg.mixer.Sound.play(jumpfx)
+                    except Exception:
+                        pass
             V_Y = 0
+            play_jump_sfx = False
 
         if not gameover and started_playing:
             time += 1
@@ -569,6 +608,7 @@ def Level_1():
         pg.draw.rect(window, "white", (screen_w-40, screen_h-20, 20, 20))
         text("\u23F8", "black", screen_w-37, screen_h-23, "segoeuisymbol", 16)
         text("↺", "black", screen_w-18, screen_h-23, "segoeuisymbol", 16)
+        text("Level 1", "black", 5, screen_h-27, "comicsansms", 18)
         if selected is selected1 or selected is selected2 or selected is selected3:
             pg.draw.rect(window, player_skin[selected], PlayerM)
         if selected is selected4:
@@ -584,6 +624,12 @@ def Level_1():
                 ((255, 0, 0), (0, 255, 0), (0, 0, 255))), PlayerM)
 
         if coin.colliderect(PlayerM):
+            if Soundfx:
+                try:
+                    coincollectedsfx = pg.mixer.Sound(CoinCollectSoundfxFile)
+                    pg.mixer.Sound.play(coincollectedsfx)
+                except Exception:
+                    pass
             coinCollected += 1
             coin_X = 710
 
@@ -740,6 +786,7 @@ def Level_2():
         pg.draw.rect(window, "white", (screen_w-40, screen_h-20, 20, 20))
         text("\u23F8", "black", screen_w-37, screen_h-23, "segoeuisymbol", 16)
         text("↺", "black", screen_w-18, screen_h-23, "segoeuisymbol", 16)
+        text("Level 2", "black", 5, screen_h-27, "comicsansms", 18)
         if selected is selected1 or selected is selected2 or selected is selected3:
             pg.draw.rect(window, player_skin[selected], PlayerM)
         if selected is selected4:
@@ -906,6 +953,7 @@ def Level_3():
         pg.draw.rect(window, "white", (screen_w-40, screen_h-20, 20, 20))
         text("\u23F8", "black", screen_w-37, screen_h-23, "segoeuisymbol", 16)
         text("↺", "black", screen_w-18, screen_h-23, "segoeuisymbol", 16)
+        text("Level 3", "black", 5, screen_h-27, "comicsansms", 18)
         ObsticleM4 = pg.draw.polygon(surface=window, color=(255, 0, 0),
                                      points=[(212, 300), (225, 280), (238, 300)])
         ObsticleM5 = pg.draw.polygon(surface=window, color=(255, 0, 0),
@@ -1228,6 +1276,7 @@ def Level_4():
         pg.draw.rect(window, "white", (screen_w-40, screen_h-20, 20, 20))
         text("\u23F8", "black", screen_w-37, screen_h-23, "segoeuisymbol", 16)
         text("↺", "black", screen_w-18, screen_h-23, "segoeuisymbol", 16)
+        text("Level 4", "black", 10, screen_h-69, "comicsansms", 18)
         try:
             Health_Bar_Numbers(Numbers=numb, plusORminus=pom)
         except Exception:
@@ -1517,6 +1566,7 @@ def Level_5():
         pg.draw.rect(window, "white", (screen_w-40, screen_h-20, 20, 20))
         text("\u23F8", "black", screen_w-37, screen_h-23, "segoeuisymbol", 16)
         text("↺", "black", screen_w-18, screen_h-23, "segoeuisymbol", 16)
+        text("Level 5", "black", 5, screen_h-27, "comicsansms", 18)
         text_screen(f"Time : {time} ms", "black", 0, 0)
         text_screen(f"Coins : {coinCollected}", "black",
                     screen_w-(84+len(str(coinCollected))*13), 0)
@@ -1922,6 +1972,7 @@ def Level_6():
         pg.draw.rect(window, "white", (screen_w-40, screen_h-20, 20, 20))
         text("\u23F8", "black", screen_w-37, screen_h-23, "segoeuisymbol", 16)
         text("↺", "black", screen_w-18, screen_h-23, "segoeuisymbol", 16)
+        text("Level 6", "black", 10, screen_h-69, "comicsansms", 18)
         try:
             Health_Bar_Numbers(Numbers=numb, plusORminus=pom)
         except Exception:
@@ -1963,7 +2014,7 @@ def Levels_Help():
                 pg.mouse.set_cursor(pg.cursors.Cursor(pg.SYSTEM_CURSOR_ARROW))
             if eventsL.type == pg.MOUSEBUTTONUP:
                 if posL[0] < 23 and posL[1] < 23:
-                    Choose_Level()
+                    Choose_Level(playing_online_offline)
                 if posL[0] > 167 and posL[0] < 297 and posL[1] > 150 and posL[1] < 185:
                     messagebox.showinfo(
                         "Jump - Level 1 - Help", "1 : Hold down → ( Right Arrow or D ) key to run.\n2 : Use ↑ ( Up Arrow or Space ) key to jump.\n3 : Use ↓ ( Down Arrow ) key to crouch.\n4 : Dodge enemies from right while keep an eye on left one, he hits if you stop.")
@@ -2002,7 +2053,7 @@ def Levels_Help():
         pg.time.Clock().tick(30)
 
 
-def Choose_Level():
+def Choose_Level(online_or_offline):
     global idusr
 
     def text_text_level(text, color, x, y, size):
@@ -2010,14 +2061,22 @@ def Choose_Level():
         text_level2 = font_Level_text.render(text, True, color)
         window.blit(text_level2, (x, y))
 
-    names = collection.find({"_id": ObjectId(idusr)})
-    for namess in names:
-        level1 = namess["level1"].split()
-        level2 = namess["level2"].split()
-        level3 = namess["level3"].split()
-        level4 = namess["level4"].split()
-        level5 = namess["level5"].split()
-        level6 = namess["level6"].split()
+    if online_or_offline:
+        names = collection.find({"_id": ObjectId(idusr)})
+        for namess in names:
+            level1 = namess["level1"].split()
+            level2 = namess["level2"].split()
+            level3 = namess["level3"].split()
+            level4 = namess["level4"].split()
+            level5 = namess["level5"].split()
+            level6 = namess["level6"].split()
+    elif not online_or_offline:
+        level1 = "True 0 0".split()
+        level2 = "True 0 0".split()
+        level3 = "True 0 0".split()
+        level4 = "True 0 0".split()
+        level5 = "True 0 0".split()
+        level6 = "True 0 0".split()
 
     while True:
         ly = 157
@@ -2030,10 +2089,14 @@ def Choose_Level():
             else:
                 pg.mouse.set_cursor(pg.cursors.Cursor(pg.SYSTEM_CURSOR_ARROW))
             if eventsL.type == pg.MOUSEBUTTONUP:
-                if posL[0] < 23 and posL[1] < 23:
+                if posL[0] < 23 and posL[1] < 23 and playing_online_offline:
                     pg.mouse.set_cursor(
                         pg.cursors.Cursor(pg.SYSTEM_CURSOR_WAIT))
                     menu()
+                elif posL[0] < 23 and posL[1] < 23 and not playing_online_offline:
+                    pg.mouse.set_cursor(
+                        pg.cursors.Cursor(pg.SYSTEM_CURSOR_WAIT))
+                    Start_Screen()
                 if posL[0] > 24 and posL[0] < 75 and posL[1] < 24 and posL[1] > -1:
                     Levels_Help()
                 if posL[0] > 95 and posL[0] < 145 and posL[1] > 135 and posL[1] < 185:
@@ -3473,7 +3536,6 @@ def Settings():
 def account_settings(email, uname):
 
     def check_login(name, paswd1, paswd2):
-        # print(f"Email : {email}\nName : {paswd1}\nPassword : {paswd2}")
         pg.mouse.set_cursor(pg.cursors.Cursor(pg.SYSTEM_CURSOR_WAIT))
         changed_name = 0
         changed_pass = 0
@@ -4053,6 +4115,7 @@ def profile(own_or_other, id_of_user):
             Available_coins = str(numerize.numerize(int(namess["coins"])))
             MainScore = namess["highscore_All_times"]
             rank_leaderboard_alltime = namess["rank_all_time"]
+            Accounts_Level_plr = namess["account_level"]
             if rank_leaderboard_alltime == 0:
                 rank_leaderboard_alltime = "None"
             player_likes = str(numerize.numerize(namess["likes"]))
@@ -4064,7 +4127,7 @@ def profile(own_or_other, id_of_user):
 
         if MainScore < 50000:
             title_plr = "Junior"
-            title_fit = 30
+            title_fit = 27
         elif MainScore >= 50000 and MainScore < 110000:
             title_plr = "Expert"
             title_fit = 27
@@ -4109,7 +4172,7 @@ def profile(own_or_other, id_of_user):
                 pos = pg.mouse.get_pos()
                 if events2.type == pg.QUIT:
                     quit_game()
-                if pos[0] < 23 and pos[1] < 23 or pos[0] > 623 and pos[1] < 23 or pos[0] > 85 and pos[1] > 74 and pos[0] < 166 and pos[1] < 95 or pos[0] > 178 and pos[1] > 41 and pos[0] < 202 and pos[1] < 61 or pos[0] > 160 and pos[0] < 179 and pos[1] > 152 and pos[1] < 173:
+                if pos[0] < 23 and pos[1] < 23 or pos[0] > 623 and pos[1] < 23 or pos[0] > 85 and pos[1] > 74 and pos[0] < 166 and pos[1] < 95 or pos[0] > 178 and pos[1] > 41 and pos[0] < 202 and pos[1] < 61 or pos[0] > 160-title_fit and pos[0] < 179-title_fit and pos[1] > 152 and pos[1] < 173 or pos[0] > 5 and pos[1] > 105 and pos[0] < 74 and pos[1] < 127:
                     pg.mouse.set_cursor(
                         pg.cursors.Cursor(pg.SYSTEM_CURSOR_HAND))
                 else:
@@ -4120,25 +4183,31 @@ def profile(own_or_other, id_of_user):
                         pg.mouse.set_cursor(
                             pg.cursors.Cursor(pg.SYSTEM_CURSOR_WAIT))
                         menu()
-                    if pos[0] > 160 and pos[0] < 179 and pos[1] > 152 and pos[1] < 173:
+                    if pos[0] > 160-title_fit and pos[0] < 179-title_fit and pos[1] > 152 and pos[1] < 173:
                         messagebox.showinfo("Jump - Titles", "1) Highscore > 0 => Junior\n2) Highscore > 50k => Expert\n3) Highscore > 110k => Master\n4) Highscore > 250k => Professor\n5) Highscore > 500k => Commander\n6) Highscore > 1M => President\n7) Highscore > 2M => King\n8) Highscore > 3M => Conqueror\n9) Highscore > 3.8M => Legend\n10) Highscore > 5M => God")
                     if pos[0] > 623 and pos[1] < 23:
                         pg.mouse.set_cursor(
                             pg.cursors.Cursor(pg.SYSTEM_CURSOR_WAIT))
-                        pickle.dump("none", open(UserNameSavedFile, "wb"))
-                        # Make player offline after logging out of Account
-                        names = collection.find({"_id": ObjectId(idusr)})
-                        for namess in names:
-                            status = namess["online"]
-                        collection.find_one_and_update({"_id": ObjectId(idusr)}, {
-                                                       "$set": {"online": False}})
-                        collection.find_one_and_update(
-                            {"_id": ObjectId(idusr)}, {"$set": {"last_online": datetime.today().strftime('%d/%m/%Y')}})
-                        Log_In()
+                        ask_to_logout = messagebox.askokcancel(
+                            "Jump - Log Out", "Are you sure you want to log out ?")
+                        if ask_to_logout:
+                            pickle.dump("none", open(UserNameSavedFile, "wb"))
+                            # Make player offline after logging out of Account
+                            names = collection.find({"_id": ObjectId(idusr)})
+                            for namess in names:
+                                status = namess["online"]
+                            collection.find_one_and_update({"_id": ObjectId(idusr)}, {
+                                                           "$set": {"online": False}})
+                            collection.find_one_and_update(
+                                {"_id": ObjectId(idusr)}, {"$set": {"last_online": datetime.today().strftime('%d/%m/%Y')}})
+                            Log_In()
                     if pos[0] > 85 and pos[1] > 74 and pos[0] < 166 and pos[1] < 95:
                         account_settings(MainEmail, MainName)
                     # if pos[0] > 60 and pos[1] > 30 and pos[0] < 75 and pos[1] < 47:
                         # change_profile_pic()
+                    if pos[0] > 5 and pos[1] > 105 and pos[0] < 74 and pos[1] < 127:
+                        messagebox.showinfo(
+                            "Jump - Accounts Level", "Level Up:\nYou need <Remaining-xp> more xp to progress onto next level ( <Current-xp>/<Required-xp> ).\n\nWhat And How ?:\nThis is your accounts level which could be increased by earning xp after every match. Maximum level is Level 50.")
                     if pos[0] > 178 and pos[1] > 41 and pos[0] < 202 and pos[1] < 61:
                         pyperclip.copy(MainName)
                         copy_text = "✔"
@@ -4179,9 +4248,14 @@ def profile(own_or_other, id_of_user):
             text("Log Out", "black", screen_w-67, 0, "comicsansms", 15)
             # pg.draw.rect(window, (224, 224, 224), (60, 27, 20, 20))
             # text("✎", "black", 63, 25, "segoeuisymbol", 15)
-            pg.draw.ellipse(window, (100, 100, 100), (160-45, 153, 20, 20))
-            text("?", "white", 167-45, 153, "helvetica", 15)
-            text(f"Title : God", "black", 10, 150, "comicsansms", 18)
+            pg.draw.rect(window, "black", (5, 105, 66+4, 22))
+            pg.draw.rect(window, "white", (7, 107, 66, 18))
+            text(f"Level {Accounts_Level_plr}",
+                 "black", 10.5, 105, "comicsansms", 15)
+            pg.draw.ellipse(window, (100, 100, 100),
+                            (160-title_fit, 153, 20, 20))
+            text("?", "white", 167-title_fit, 153, "helvetica", 15)
+            text(f"Title : {title_plr}", "black", 10, 150, "comicsansms", 18)
             text(f"Rank : # {rank_leaderboard_alltime}",
                  "black", 10, 200, "comicsansms", 18)
             text(f"Coins : {Available_coins}",
@@ -4228,6 +4302,9 @@ def profile(own_or_other, id_of_user):
             Other_coins = str(numerize.numerize(int(otherss["coins"])))
             OtherScore = otherss["highscore_All_times"]
             rank_leaderboard_alltime = otherss["rank_all_time"]
+            Accounts_Level_other = otherss["account_level"]
+            if rank_leaderboard_alltime == 0:
+                rank_leaderboard_alltime = "None"
             player_likes = otherss["likes"]
             player_likes_show = numerize.numerize(otherss["likes"])
             players_who_already_liked_this_account = otherss["liked_by"]
@@ -4340,6 +4417,10 @@ def profile(own_or_other, id_of_user):
             text(player_likes_show, "black", 175, 76, "segoeuisymbol", 12)
             text(online_offline_show, "black", screen_w -
                  67+online_width, 0, "comicsansms", 15)
+            pg.draw.rect(window, "black", (5, 105, 66+4, 22))
+            pg.draw.rect(window, "white", (7, 107, 66, 18))
+            text(f"Level {Accounts_Level_other}",
+                 "black", 10.5, 105, "comicsansms", 15)
             text(f"Title : {title_other}", "black", 10, 150, "comicsansms", 18)
             text(f"Rank : # {rank_leaderboard_alltime}",
                  "black", 10, 200, "comicsansms", 18)
@@ -4458,7 +4539,7 @@ def menu():
                 if pos[0] > 251 and pos[0] < 451 and pos[1] > 220 and pos[1] < 270:
                     pg.mouse.set_cursor(
                         pg.cursors.Cursor(pg.SYSTEM_CURSOR_WAIT))
-                    Choose_Level()
+                    Choose_Level(playing_online_offline)
                 if pos[0] > 251 and pos[0] < 451 and pos[1] > 289 and pos[1] < 340:
                     Options()
                 if pos[0] > 0 and pos[0] < 59 and pos[1] > 0 and pos[1] < 59:
@@ -4605,6 +4686,7 @@ def sign_up():
                         "skin4": False,
                         "skin5": False,
                         "skin6": False,
+                        "account_level": 1,
                         "level1": "True 0 0",
                         "level2": "False 0 0",
                         "level3": "False 0 0",
@@ -4618,7 +4700,8 @@ def sign_up():
                         "Jump - Sign Up", "Account successfully created, You can now log in.")
                     Log_In()
                 except Exception:
-                    messagebox.showerror("Jump - Sign Up", "There was a problem with your email, please try again or use a valid email address.")
+                    messagebox.showerror(
+                        "Jump - Sign Up", "There was a problem with your email, please try again or use a valid email address.")
                     return
 
     class Entry_Name:
@@ -6020,7 +6103,7 @@ def change_password_RECOVERY(name_of_account):
                     asktoleaveforgotpass = messagebox.askquestion(
                         "Jump - Reset Password", "Are you sure you want to go back ?")
                     if asktoleaveforgotpass:
-                        print("Log_In()")
+                        Log_In()
                 if pos[0] > 206 and pos[0] < 495 and pos[1] > 162 and pos[1] < 201:
                     active = True
                     active_color = "white"
@@ -6433,6 +6516,7 @@ def Log_In():
 
 def Start_Screen():
     global collection
+    global playing_online_offline
     color = 150
 
     try:
@@ -6444,18 +6528,33 @@ def Start_Screen():
         pickle.dump("none", open(UserNameSavedFile, "wb"))
         logedinornot = pickle.load(open(UserNameSavedFile, "rb"))
 
+    buttonc = 150
     perform = True
     error_message = ""
     login_Screen_message = "Loading..."
-    login_Screen_message_x, login_Screen_message_y = screen_w/3+80, screen_h/2+115
+    login_Screen_message_x, login_Screen_message_y = screen_w/3+70, screen_h/2+105
+    pg.mouse.set_cursor(pg.cursors.Cursor(pg.SYSTEM_CURSOR_ARROW))
 
     while True:
         pg.mixer.music.pause()
         window.fill((150, 150, 150))
         for events2 in pg.event.get():
             pos = pg.mouse.get_pos()
+            if pos[0] > 250 and pos[1] > 350 and pos[0] < 329 and pos[1] < 374 or pos[0] > 352 and pos[1] > 350 and pos[0] < 446 and pos[1] < 374 and not perform:
+                pg.mouse.set_cursor(pg.cursors.Cursor(pg.SYSTEM_CURSOR_HAND))
+            else:
+                pg.mouse.set_cursor(pg.cursors.Cursor(pg.SYSTEM_CURSOR_ARROW))
             if events2.type == pg.QUIT:
                 quit_game()
+            if events2.type == pg.MOUSEBUTTONDOWN:
+                if pos[0] > 250 and pos[1] > 350 and pos[0] < 329 and pos[1] < 374 and not perform:
+                    pg.mouse.set_cursor(
+                        pg.cursors.Cursor(pg.SYSTEM_CURSOR_WAIT))
+                    Start_Screen()
+                if pos[0] > 352 and pos[1] > 350 and pos[0] < 446 and pos[1] < 374 and not perform:
+                    pg.mouse.set_cursor(
+                        pg.cursors.Cursor(pg.SYSTEM_CURSOR_WAIT))
+                    Choose_Level(playing_online_offline)
 
         text("J U M P", ((color, color, color)),
              screen_w/3, screen_h/3, "comicsansms", 60)
@@ -6465,6 +6564,12 @@ def Start_Screen():
              login_Screen_message_x-17, login_Screen_message_y-1, "segoeuisymbol", 16)
         text(login_Screen_message, ((color, color, color)),
              login_Screen_message_x, login_Screen_message_y, "comicsansms", 15)
+        pg.draw.rect(window, (buttonc, buttonc, buttonc), (250, 350, 80, 25))
+        pg.draw.rect(window, (buttonc, buttonc, buttonc), (352, 350, 95, 25))
+        text("Reconnect", ((150, 150, 150)),
+             254, 352, "comicsansms", 15)
+        text("Play Offline", ((150, 150, 150)),
+             357, 352, "comicsansms", 15)
         color -= 0.3
         if color <= 0:
             color = 0
@@ -6474,6 +6579,7 @@ def Start_Screen():
                         'mongodb+srv://aayanyasin:A10485766a@cluster0.ez9nx.mongodb.net/Jump?retryWrites=true&w=majority')
                     db = cluster["Jump"]
                     collection = db["Players Data"]
+                    playing_online_offline = True
                     if logedinornot == "none":
                         try:
                             pg.mixer.music.play()
@@ -6486,19 +6592,23 @@ def Start_Screen():
                         except Exception:
                             pass
                         menu()
-                except Exception as e:
-                    print(e)
+                except Exception:
                     perform = False
-                    login_Screen_message_x = screen_w/3-40
+                    playing_online_offline = False
+                    login_Screen_message_x = screen_w/3-30
                     error_message = "ⓘ"
-                    login_Screen_message = "Please make sure you are connected to internet."
-                    names = collection.find({"_id": ObjectId(idusr)})
-                    for namess in names:
-                        status = namess["online"]
-                    collection.find_one_and_update({"_id": ObjectId(idusr)}, {
-                                                   "$set": {"online": False}})
-                    collection.find_one_and_update(
-                        {"_id": ObjectId(idusr)}, {"$set": {"last_online": datetime.today().strftime('%d/%m/%Y')}})
+                    login_Screen_message = "Connection to server failed, please try again.."
+                    buttonc = 10
+                    try:
+                        names = collection.find({"_id": ObjectId(idusr)})
+                        for namess in names:
+                            status = namess["online"]
+                        collection.find_one_and_update({"_id": ObjectId(idusr)}, {
+                                                       "$set": {"online": False}})
+                        collection.find_one_and_update(
+                            {"_id": ObjectId(idusr)}, {"$set": {"last_online": datetime.today().strftime('%d/%m/%Y')}})
+                    except Exception:
+                        pass
 
         pg.display.update()
 
