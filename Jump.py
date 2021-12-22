@@ -30,6 +30,9 @@ root.wm_withdraw()
 musicFile = "assets\\sounds\\background.mp3"
 CoinCollectSoundfxFile = "assets\\sounds\\Coin_Collect_Sound.mp3"
 JumpSoundfxFile = "assets\\sounds\\JumpOnLandSound.mp3"
+ShootSoundfxFile = "assets\\sounds\\GunShootSound.mp3"
+HitEnemySoundfxFile = "assets\\sounds\\HitIntoEnemySound.mp3"
+GameOverSoundfxFile = "assets\\sounds\\GameOverSound.wav"
 UserNameSavedFile = "assets\\UserCreds.dat"
 IconFile = "assets\JUMP-ICON.png"
 # ProfileImageFile = "assets\PROFILE-IMAGE.png"
@@ -139,6 +142,7 @@ def Game_over():
     NorF = None
     Now_click = False
     time_to_update = 0
+    now_play_gameover_sfx = True
     clock = pg.time.Clock()
 
     SCORE = ((coinCollected+time)//2)
@@ -259,6 +263,14 @@ def Game_over():
                                            "$set": {"level6": f"True {Level6[1]} {Level6[2]}"}})
 
     while go:
+        if now_play_gameover_sfx:
+            if Soundfx:
+                try:
+                    gameoversfx = pg.mixer.Sound(GameOverSoundfxFile)
+                    pg.mixer.Sound.play(gameoversfx)
+                except Exception:
+                    pass
+            now_play_gameover_sfx = False
         for eventsGO in pg.event.get():
             pos = pg.mouse.get_pos()
             if eventsGO.type == pg.QUIT:
@@ -458,7 +470,7 @@ def Level_1():
     time = 0
     sec_1 = 0
     started_playing = False
-    play_jump_sfx = False
+    now_play_jump_sfx = False
     fps = 30
 
     clock = pg.time.Clock()
@@ -485,7 +497,7 @@ def Level_1():
                 quit_game()
             if events.type == pg.KEYDOWN:
                 if events.key == pg.K_UP or events.key == pg.K_w or events.key == pg.K_SPACE:
-                    play_jump_sfx = True
+                    now_play_jump_sfx = True
                     V_Y = jump
             posMain = pg.mouse.get_pos()
             if posMain[0] > 660 and posMain[1] > 380 and posMain[0] < 677 and posMain[1] < screen_h or posMain[0] > 678 and posMain[1] > 380 and posMain[0] < screen_w and posMain[1] < screen_h:
@@ -576,7 +588,7 @@ def Level_1():
         if P_Y <= 200:
             V_Y = -jump
         if P_Y >= 270:
-            if play_jump_sfx:
+            if now_play_jump_sfx:
                 if Soundfx:
                     try:
                         jumpfx = pg.mixer.Sound(JumpSoundfxFile)
@@ -585,7 +597,7 @@ def Level_1():
                     except Exception:
                         pass
             V_Y = 0
-            play_jump_sfx = False
+            now_play_jump_sfx = False
 
         if not gameover and started_playing:
             time += 1
@@ -634,6 +646,12 @@ def Level_1():
             coin_X = 710
 
         if gameover:
+            if Soundfx:
+                try:
+                    enemyhitfx = pg.mixer.Sound(HitEnemySoundfxFile)
+                    pg.mixer.Sound.play(enemyhitfx)
+                except Exception:
+                    pass
             P_X = 350
             P_Y = 0
             V_X = 0
@@ -689,6 +707,7 @@ def Level_2():
     jump = -15
     sec_1 = 0
     time = 0
+    now_play_jump_sfx = False
     fps = 30
 
     clock = pg.time.Clock()
@@ -719,6 +738,7 @@ def Level_2():
                 if events.key == pg.K_LEFT or events.key == pg.K_a:
                     V_X = move_b
                 if events.key == pg.K_UP or events.key == pg.K_w or events.key == pg.K_SPACE:
+                    now_play_jump_sfx = True
                     V_Y = jump
             if events.type == pg.KEYUP:
                 if events.key == pg.K_RIGHT or events.key == pg.K_d:
@@ -750,6 +770,15 @@ def Level_2():
         if P_Y <= 200:
             V_Y = -jump
         if P_Y >= 270:
+            if now_play_jump_sfx:
+                if Soundfx:
+                    try:
+                        jumpfx = pg.mixer.Sound(JumpSoundfxFile)
+                        jumpfx.set_volume(0.25)
+                        pg.mixer.Sound.play(jumpfx)
+                    except Exception:
+                        pass
+                now_play_jump_sfx = False
             V_Y = 0
 
         if O_X < 0:
@@ -802,14 +831,32 @@ def Level_2():
                 ((255, 0, 0), (0, 255, 0), (0, 0, 255))), PlayerM)
 
         if coin.colliderect(PlayerM):
+            if Soundfx:
+                try:
+                    coincollectedsfx = pg.mixer.Sound(CoinCollectSoundfxFile)
+                    pg.mixer.Sound.play(coincollectedsfx)
+                except Exception:
+                    pass
             coinCollected += 1
             coin_X = rd.randint(10, 350)
 
         if coin2.colliderect(PlayerM):
+            if Soundfx:
+                try:
+                    coincollectedsfx = pg.mixer.Sound(CoinCollectSoundfxFile)
+                    pg.mixer.Sound.play(coincollectedsfx)
+                except Exception:
+                    pass
             coinCollected += 1
             coin_X2 = rd.randint(350, 690)
 
         if gameover:
+            if Soundfx:
+                try:
+                    enemyhitfx = pg.mixer.Sound(HitEnemySoundfxFile)
+                    pg.mixer.Sound.play(enemyhitfx)
+                except Exception:
+                    pass
             P_X = 350
             P_Y = 0
             V_X = 0
@@ -862,6 +909,7 @@ def Level_3():
     movel = -9
     jump = -15
     time = 0
+    now_play_jump_sfx = False
     fps = 30
 
     clock = pg.time.Clock()
@@ -895,6 +943,7 @@ def Level_3():
                     restart(3)
             if events.type == pg.KEYDOWN:
                 if events.key == pg.K_UP or events.key == pg.K_w or events.key == pg.K_SPACE:
+                    now_play_jump_sfx = True
                     V_Y = jump
                 if events.key == pg.K_RIGHT or events.key == pg.K_d:
                     V_X = mover
@@ -930,6 +979,15 @@ def Level_3():
         if P_Y <= 200:
             V_Y = -jump
         if P_Y >= 270:
+            if now_play_jump_sfx:
+                if Soundfx:
+                    try:
+                        jumpfx = pg.mixer.Sound(JumpSoundfxFile)
+                        jumpfx.set_volume(0.25)
+                        pg.mixer.Sound.play(jumpfx)
+                    except Exception:
+                        pass
+                now_play_jump_sfx = False
             V_Y = 0
 
         if not gameover:
@@ -973,6 +1031,12 @@ def Level_3():
                 ((255, 0, 0), (0, 255, 0), (0, 0, 255))), PlayerM)
 
         if coin1.colliderect(PlayerM):
+            if Soundfx:
+                try:
+                    coincollectedsfx = pg.mixer.Sound(CoinCollectSoundfxFile)
+                    pg.mixer.Sound.play(coincollectedsfx)
+                except Exception:
+                    pass
             coinCollected += 1
             coin_X = rd.choice(
                 (rd.randint(28, 175), rd.randint(548, 672), rd.randint(270, 458)))
@@ -981,6 +1045,12 @@ def Level_3():
             gameover = True
 
         if gameover:
+            if Soundfx:
+                try:
+                    enemyhitfx = pg.mixer.Sound(HitEnemySoundfxFile)
+                    pg.mixer.Sound.play(enemyhitfx)
+                except Exception:
+                    pass
             P_X = 350
             P_Y = 0
             V_X = 0
@@ -1040,6 +1110,7 @@ def Level_4():
     barColor = (0, 153, 0)
     barM_width = 200
     fps = 45
+    now_play_jump_sfx = False
     clock = pg.time.Clock()
 
     def text_screen(text, color, x, y, family, size):
@@ -1109,6 +1180,13 @@ def Level_4():
                     LR = 0
                     V_X = 10
                 if i.key == K_SPACE:
+                    if ready1 or ready2:
+                        if Soundfx:
+                            try:
+                                shootfx = pg.mixer.Sound(ShootSoundfxFile)
+                                pg.mixer.Sound.play(shootfx)
+                            except Exception:
+                                pass
                     if ready1:
                         if LR >= 0:
                             Clas_x, Clas_y = Px+37, Py+10
@@ -1120,6 +1198,7 @@ def Level_4():
                             Move2 = -25
                             ready2 = False
                 if i.key == pg.K_UP or i.key == pg.K_w:
+                    now_play_jump_sfx = True
                     V_Y = jump
             if i.type == pg.KEYUP:
                 if i.key == K_RIGHT or i.key == pg.K_d:
@@ -1174,6 +1253,15 @@ def Level_4():
         if Py <= 200:
             V_Y = -jump
         if Py >= 270:
+            if now_play_jump_sfx:
+                if Soundfx:
+                    try:
+                        jumpfx = pg.mixer.Sound(JumpSoundfxFile)
+                        jumpfx.set_volume(0.25)
+                        pg.mixer.Sound.play(jumpfx)
+                    except Exception:
+                        pass
+                now_play_jump_sfx = False
             V_Y = 0
         if Px < 3 or Px > 679:
             V_X = 0
@@ -1200,7 +1288,6 @@ def Level_4():
             Play_Again = Level_4
             Current_Level = 4
             Game_over()
-
         try:
             # Obsticle 1 - Right Side
             if abs(Obsticle1.x-Bullet2.x) < 10 and abs(Obsticle1.y-Bullet2.y) < 6:
@@ -1236,6 +1323,12 @@ def Level_4():
                 pom = 1
             # Collide with enemy - Game Over
             if abs(Px-Ox1) < 15 and abs(Py-Oy1) < 25:
+                if Soundfx:
+                    try:
+                        enemyhitfx = pg.mixer.Sound(HitEnemySoundfxFile)
+                        pg.mixer.Sound.play(enemyhitfx)
+                    except Exception:
+                        pass
                 barM_width -= 30
                 Ox1 = -20
                 Oy1 = 280
@@ -1244,6 +1337,12 @@ def Level_4():
                 numb = 30
                 pom = 0
             if abs(Px-Ox2) < 15 and abs(Py-Oy2) < 25:
+                if Soundfx:
+                    try:
+                        enemyhitfx = pg.mixer.Sound(HitEnemySoundfxFile)
+                        pg.mixer.Sound.play(enemyhitfx)
+                    except Exception:
+                        pass
                 barM_width -= 30
                 Ox1 = -30
                 Oy1 = 280
@@ -1353,6 +1452,7 @@ def Level_5():
     CoinY4 = wall7y_u+330
     CoinX5 = wall9x_u+15
     CoinY5 = wall9y_u+330
+    nowplaycoinsfx = False
     V_y = 0
     clock = pg.time.Clock()
     fps = 30
@@ -1585,25 +1685,45 @@ def Level_5():
                 ((255, 0, 0), (0, 255, 0), (0, 0, 255))), PlayerM)
 
         if gameover:
+            if Soundfx:
+                try:
+                    enemyhitfx = pg.mixer.Sound(HitEnemySoundfxFile)
+                    pg.mixer.Sound.play(enemyhitfx)
+                except Exception:
+                    pass
             Play_Again = Level_5
             Current_Level = 5
             Game_over()
 
         if PlayerM.colliderect(Coin1):
+            nowplaycoinsfx = True
             coinCollected += 1
             CoinY1 = -15
         if PlayerM.colliderect(Coin2):
+            nowplaycoinsfx = True
             coinCollected += 1
             CoinY2 = -15
         if PlayerM.colliderect(Coin3):
+            nowplaycoinsfx = True
             coinCollected += 1
             CoinY3 = -15
         if PlayerM.colliderect(Coin4):
+            nowplaycoinsfx = True
             coinCollected += 1
             CoinY4 = -15
         if PlayerM.colliderect(Coin5):
+            nowplaycoinsfx = True
             coinCollected += 1
             CoinY5 = -15
+
+        if nowplaycoinsfx:
+            if Soundfx:
+                try:
+                    coincollectedsfx = pg.mixer.Sound(CoinCollectSoundfxFile)
+                    pg.mixer.Sound.play(coincollectedsfx)
+                except Exception:
+                    pass
+            nowplaycoinsfx = False
 
         if PlayerM.colliderect(Wall1_u) or PlayerM.colliderect(Wall1_l) or PlayerM.colliderect(Wall2_u) or PlayerM.colliderect(Wall2_l) or PlayerM.colliderect(Wall3_u) or PlayerM.colliderect(Wall3_l) or PlayerM.colliderect(Wall4_u) or PlayerM.colliderect(Wall4_l) or PlayerM.colliderect(Wall5_u) or PlayerM.colliderect(Wall5_l) or PlayerM.colliderect(Wall6_u) or PlayerM.colliderect(Wall6_l) or PlayerM.colliderect(Wall7_u) or PlayerM.colliderect(Wall7_l) or PlayerM.colliderect(Wall8_u) or PlayerM.colliderect(Wall8_l) or PlayerM.colliderect(Wall9_u) or PlayerM.colliderect(Wall9_l):
             gameover = True
@@ -1668,6 +1788,7 @@ def Level_6():
     barColor = (0, 153, 0)
     barM_width = 200
     fps = 35
+    now_play_jump_sfx = False
     clock = pg.time.Clock()
 
     def text_screen(text, color, x, y, family, size):
@@ -1741,6 +1862,13 @@ def Level_6():
                     LR = 0
                     V_X = 10
                 if i.key == pg.K_SPACE:
+                    if ready1 or ready2:
+                        if Soundfx:
+                            try:
+                                shootfx = pg.mixer.Sound(ShootSoundfxFile)
+                                pg.mixer.Sound.play(shootfx)
+                            except Exception:
+                                pass
                     if ready1:
                         if LR >= 0:
                             Clas_x, Clas_y = Px+37, Py+10
@@ -1752,6 +1880,7 @@ def Level_6():
                             Move2 = -25
                             ready2 = False
                 if i.key == pg.K_UP or i.key == pg.K_w:
+                    now_play_jump_sfx = True
                     V_Y = jump
             if i.type == pg.KEYUP:
                 if i.key == pg.K_RIGHT or i.key == pg.K_d:
@@ -1805,6 +1934,15 @@ def Level_6():
         if Py <= 200:
             V_Y = -jump
         if Py >= 270:
+            if now_play_jump_sfx:
+                if Soundfx:
+                    try:
+                        jumpfx = pg.mixer.Sound(JumpSoundfxFile)
+                        jumpfx.set_volume(0.25)
+                        pg.mixer.Sound.play(jumpfx)
+                    except Exception:
+                        pass
+                now_play_jump_sfx = False
             V_Y = 0
         if Px < 3 or Px > 679:
             V_X = 0
@@ -1850,6 +1988,12 @@ def Level_6():
 
         # Fly enemy Bullet movement
         if O_Fx_B_Timer > fps*2:
+            if Soundfx:
+                try:
+                    shootfx = pg.mixer.Sound(ShootSoundfxFile)
+                    pg.mixer.Sound.play(shootfx)
+                except Exception:
+                    pass
             O_Fx_By_velocity = 10
             O_Fx_B_Timer = 0
 
@@ -1900,6 +2044,12 @@ def Level_6():
                 pom = 1
             # Collide with enemy - Health redused
             if abs(Px-Ox1) < 15 and abs(Py-Oy1) < 25:
+                if Soundfx:
+                    try:
+                        enemyhitfx = pg.mixer.Sound(HitEnemySoundfxFile)
+                        pg.mixer.Sound.play(enemyhitfx)
+                    except Exception:
+                        pass
                 barM_width -= 30
                 Ox1 = -20
                 Oy1 = 280
@@ -1908,6 +2058,12 @@ def Level_6():
                 numb = 30
                 pom = 0
             if abs(Px-Ox2) < 15 and abs(Py-Oy2) < 25:
+                if Soundfx:
+                    try:
+                        enemyhitfx = pg.mixer.Sound(HitEnemySoundfxFile)
+                        pg.mixer.Sound.play(enemyhitfx)
+                    except Exception:
+                        pass
                 barM_width -= 30
                 Ox1 = -20
                 Oy1 = 280
@@ -1916,6 +2072,12 @@ def Level_6():
                 numb = 30
                 pom = 0
             if ObsticleM1.colliderect(PlayerM) or ObsticleM2.colliderect(PlayerM) or ObsticleM3.colliderect(PlayerM):
+                if Soundfx:
+                    try:
+                        enemyhitfx = pg.mixer.Sound(HitEnemySoundfxFile)
+                        pg.mixer.Sound.play(enemyhitfx)
+                    except Exception:
+                        pass
                 barM_width -= 50
                 O_Y1 = -50
                 O_Y2 = -50
@@ -3449,15 +3611,12 @@ def people():
 
 btmClick = 420
 btmClick2 = 420
-ConnectvsLout = "Connect"
-CvsL = 0
 
 
 def Settings():
     global btmClick
     global btmClick2
-    global ConnectvsLout
-    global CvsL
+    global Soundfx
 
     def text_text_setting(text, color, x, y, size, family):
         font_Level_text = pg.font.SysFont(family, size)
@@ -3491,7 +3650,7 @@ def Settings():
             posS = pg.mouse.get_pos()
             if eventsS.type == pg.QUIT:
                 quit_game()
-            if posS[0] < 23 and posS[1] < 23 or posS[0] > 420 and posS[0] < 480 and posS[1] > 128 and posS[1] < 153 or posS[0] > 491 and posS[0] < 552 and posS[1] > 128 and posS[1] < 153 or posS[0] > 411 and posS[0] < 559 and posS[1] > 195 and posS[1] < 228 or posS[0] > 411 and posS[0] < 559 and posS[1] > 266 and posS[1] < 301:
+            if posS[0] < 23 and posS[1] < 23 or posS[0] > 420 and posS[0] < 480 and posS[1] > 128 and posS[1] < 153 or posS[0] > 491 and posS[0] < 552 and posS[1] > 128 and posS[1] < 153 or posS[0] > 411 and posS[0] < 559 and posS[1] > 266 and posS[1] < 301 or posS[0] > 420 and posS[0] < 480 and posS[1] > 199 and posS[1] < 219 or posS[0] > 491 and posS[0] < 552 and posS[1] > 199 and posS[1] < 219:
                 pg.mouse.set_cursor(pg.cursors.Cursor(pg.SYSTEM_CURSOR_HAND))
             else:
                 pg.mouse.set_cursor(pg.cursors.Cursor(pg.SYSTEM_CURSOR_ARROW))
@@ -3504,10 +3663,12 @@ def Settings():
                 if posS[0] > 491 and posS[0] < 552 and posS[1] > 128 and posS[1] < 153:
                     pg.mixer.music.set_volume(0)
                     btmClick = 492
-                if posS[0] > 411 and posS[0] < 559 and posS[1] > 195 and posS[1] < 228:
-                    pg.mouse.set_cursor(
-                        pg.cursors.Cursor(pg.SYSTEM_CURSOR_WAIT))
-                    Game_Update()
+                if posS[0] > 420 and posS[0] < 480 and posS[1] > 199 and posS[1] < 219:
+                    Soundfx = True
+                    btmClick2 = 420
+                if posS[0] > 491 and posS[0] < 552 and posS[1] > 199 and posS[1] < 219:
+                    Soundfx = False
+                    btmClick2 = 492
                 if posS[0] > 411 and posS[0] < 559 and posS[1] > 266 and posS[1] < 301:
                     wb.open_new_tab("https://aayan-yasin25.itch.io")
 
@@ -3516,17 +3677,21 @@ def Settings():
         pg.draw.rect(window, (172, 172, 172), (0, 0, 23, 23))
         text_text_setting("<", (0, 0, 0), 5, -1, 20, "helvetica")
         text_text_setting("Music", (0, 0, 0), 135, 131, 30, "corbel")
-        text_text_setting("Update", (0, 0, 0), 136, 201, 30, "corbel")
+        text_text_setting("Sound Fx", (0, 0, 0), 136, 201, 30, "corbel")
         text_text_setting("More Games", (0, 0, 0), 136, 272, 30, "corbel")
         pg.draw.rect(window, (0, 0, 0), (412, 125, 148, 35))
         pg.draw.rect(window, (225, 225, 225), (492, 130, 60, 25))
         pg.draw.rect(window, (225, 225, 225), (420, 130, 60, 25))
         pg.draw.rect(window, (255, 255, 255), (btmClick, 130, 60, 25))
-        pg.draw.rect(window, (0, 0, 0), (412, 195, 148, 35))
         text_text_setting("ON", (0, 0, 0), 433, 128, 25, "helvetica")
         text_text_setting("OFF", (0, 0, 0), 501, 128, 25, "helvetica")
+        pg.draw.rect(window, (0, 0, 0), (412, 195, 148, 35))
+        pg.draw.rect(window, (225, 225, 225), (492, 200, 60, 25))
+        pg.draw.rect(window, (225, 225, 225), (420, 200, 60, 25))
+        pg.draw.rect(window, (255, 255, 255), (btmClick2, 200, 60, 25))
+        text_text_setting("ON", (0, 0, 0), 433, 198, 25, "helvetica")
+        text_text_setting("OFF", (0, 0, 0), 501, 198, 25, "helvetica")
         pg.draw.rect(window, (0, 0, 0), (412, 266, 148, 35))
-        text_text_setting("CHECK", (255, 255, 255), 443, 198, 25, "times")
         text_text_setting("EXPLORE", (255, 255, 255), 432, 269, 25, "times")
         text_text_setting("A  Game  By  Aayan  Yasin",
                           (97, 81, 81), 235, 348, 20, "corbel")
