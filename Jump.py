@@ -10,6 +10,7 @@ import time as t
 import webbrowser as wb
 from bs4 import BeautifulSoup
 from urllib.request import Request, urlopen
+from pygame.display import iconify
 from pymongo import MongoClient, DESCENDING, message
 from bson.objectid import ObjectId
 from datetime import date, datetime
@@ -27,15 +28,27 @@ pg.init()
 root = Tk()
 root.wm_withdraw()
 
+if not os.path.isdir("assets\\data"):
+    os.mkdir("assets\\data")
+
+# Music and Soundfx
 musicFile = "assets\\sounds\\background.mp3"
 CoinCollectSoundfxFile = "assets\\sounds\\Coin_Collect_Sound.mp3"
 JumpSoundfxFile = "assets\\sounds\\JumpOnLandSound.mp3"
 ShootSoundfxFile = "assets\\sounds\\GunShootSound.mp3"
 HitEnemySoundfxFile = "assets\\sounds\\HitIntoEnemySound.mp3"
 GameOverSoundfxFile = "assets\\sounds\\GameOverSound.wav"
-UserNameSavedFile = "assets\\UserCreds.dat"
-IconFile = "assets\JUMP-ICON.png"
-# ProfileImageFile = "assets\PROFILE-IMAGE.png"
+# Images and Icon
+IconFile = "assets\\images\\JUMP-ICON.png"
+Avatar2File = "assets\\images\\FightTillDeathAvatar.png"
+Avatar3File = "assets\\images\\DictatorAvatar.jpg"
+Avatar4File = "assets\\images\\FriendsPartyAvatar.png"
+Avatar5File = "assets\\images\\JumpFrontFaceAllAvatar.png"
+Avatar6File = "assets\\images\\KingAvatar.png"
+list_avatars = [IconFile, Avatar2File, Avatar3File,
+                Avatar4File, Avatar5File, Avatar6File]
+# UserData
+UserNameSavedFile = "assets\\data\\UserCreds.dat"
 
 screen_w = 700
 screen_h = 400
@@ -69,6 +82,10 @@ if not os.path.isfile(UserNameSavedFile):
 selected1, selected2, selected3, selected4, selected5, selected6 = (
     107, 87), (303, 87), (499, 87), (107, 245), (303, 245), (499, 245)
 selected = selected1
+
+selected1_Avatars, selected2_Avatars, selected3_Avatars, selected4_Avatars, selected5_Avatars, selected6_Avatars = (
+    107, 87), (303, 87), (499, 87), (107, 245), (303, 245), (499, 245)
+selected_Avatars = selected1_Avatars
 
 # Colors/Skins
 selected1_Color = (0, 0, 0)
@@ -106,22 +123,8 @@ show_leaderBoard_winner = 0
 
 
 def files_available_not():
-    musicf = ""
-    iconf = ""
-    no_of_files = 0
-    coma = ""
-    s = ""
-    if not MusicFile_AvailableORnot:
-        musicf = "background.mp3"
-        no_of_files += 1
-    if not IconFile_AvailableORnot:
-        iconf = "JUMP-ICON.png"
-        no_of_files += 1
-    if no_of_files == 2:
-        coma = ", "
-        s = "s"
-    messagebox.showwarning(
-        "Jump - Files missing", f"{no_of_files} file{s} missing ( {musicf}{coma}{iconf} )")
+    if messagebox.askokcancel("Jump - Files missing", f"Some of the files are missing to avoid any type of error please reinstall them from itch.io/jump page"):
+        wb.open_new_tab("https://aayan-yasin25.itch.io/jump")
 
 
 def text(text, color, x, y, family, size):
@@ -2631,39 +2634,35 @@ def Character_menu():
         rndFONT = font.render(text, True, color)
         window.blit(rndFONT, (x, y))
 
-    def buyChar(fileNumber):
+    def buyAvatar(fileNumber):
         pg.mouse.set_cursor(pg.cursors.Cursor(pg.SYSTEM_CURSOR_WAIT))
         coins_to_deduct_from_db = coins_owned-dict_i[fileNumber]
-        collection.find_one_and_update(
-            {"_id": ObjectId(idusr)}, {"$set": {"coins": str(coins_to_deduct_from_db)}})
-        collection.find_one_and_update(
-            {"_id": ObjectId(idusr)}, {"$set": {"coins": str(coins_to_deduct_from_db)}})
+        collection.find_one_and_update({"_id": ObjectId(idusr)}, {
+                                       "$set": {"coins": str(coins_to_deduct_from_db)}})
+        new_skins_owned = "".join(skins_owned)
         if fileNumber == 2:
             collection.find_one_and_update(
-                {"_id": ObjectId(idusr)}, {"$set": {"skin2": True}})
+                {"_id": ObjectId(idusr)}, {"$set": {"skins": f"{new_skins_owned} 2"}})
         if fileNumber == 3:
             collection.find_one_and_update(
-                {"_id": ObjectId(idusr)}, {"$set": {"skin3": True}})
+                {"_id": ObjectId(idusr)}, {"$set": {"skins": f"{new_skins_owned} 3"}})
         if fileNumber == 4:
             collection.find_one_and_update(
-                {"_id": ObjectId(idusr)}, {"$set": {"skin4": True}})
+                {"_id": ObjectId(idusr)}, {"$set": {"skins": f"{new_skins_owned} 4"}})
         if fileNumber == 5:
             collection.find_one_and_update(
-                {"_id": ObjectId(idusr)}, {"$set": {"skin5": True}})
+                {"_id": ObjectId(idusr)}, {"$set": {"skins": f"{new_skins_owned} 5"}})
         if fileNumber == 6:
             collection.find_one_and_update(
-                {"_id": ObjectId(idusr)}, {"$set": {"skin6": True}})
+                {"_id": ObjectId(idusr)}, {"$set": {"skins": f"{new_skins_owned} 6"}})
 
     while True:
         names = collection.find({"_id": ObjectId(idusr)})
         for namess in names:
             Available_coins = str(numerize.numerize(int(namess["coins"])))
             Available_coins_Main = int(namess["coins"])
-            skin2 = namess["skin2"]
-            skin3 = namess["skin3"]
-            skin4 = namess["skin4"]
-            skin5 = namess["skin5"]
-            skin6 = namess["skin6"]
+            skins_owned = list(namess["skins"])
+            current_char = namess["curr_skins"]
         coins_owned = Available_coins_Main
         random5_m6 = rd.choice(((255, 0, 0), (0, 255, 0), (0, 0, 255)))
         if sec_1 > 30:
@@ -2688,62 +2687,70 @@ def Character_menu():
                 if pos[0] > 107 and pos[0] < 211 and pos[1] > 87 and pos[1] < 215:
                     selected = selected1
                 if pos[0] > 303 and pos[0] < 407 and pos[1] > 87 and pos[1] < 215:
-                    if skin2:
+                    if "2" in skins_owned:
                         selected = selected2
                     else:
                         if coins_owned >= dict_i[2]:
-                            buyChar(2)
+                            buyAvatar(2)
                         else:
                             messagebox.showerror(
-                                "Peyment Unsuccessfull - Jump", error_unsufficient_coins)
+                                "Payment Unsuccessfull - Jump", error_unsufficient_coins)
                 if pos[0] > 499 and pos[0] < 602 and pos[1] > 87 and pos[1] < 215:
-                    if skin3:
+                    if "3" in skins_owned:
                         selected = selected3
                     else:
                         if coins_owned >= dict_i[3]:
-                            buyChar(3)
+                            buyAvatar(3)
                         else:
                             messagebox.showerror(
-                                "Peyment Unsuccessfull - Jump", error_unsufficient_coins)
+                                "Payment Unsuccessfull - Jump", error_unsufficient_coins)
                 if pos[0] > 107 and pos[0] < 211 and pos[1] > 250 and pos[1] < 373:
-                    if skin4:
+                    if "4" in skins_owned:
                         selected = selected4
                     else:
                         if coins_owned >= dict_i[4]:
-                            buyChar(4)
+                            buyAvatar(4)
                         else:
                             messagebox.showerror(
-                                "Peyment Unsuccessfull - Jump", error_unsufficient_coins)
+                                "Payment Unsuccessfull - Jump", error_unsufficient_coins)
                 if pos[0] > 303 and pos[0] < 407 and pos[1] > 250 and pos[1] < 373:
-                    if skin5:
+                    if "5" in skins_owned:
                         selected = selected5
                     else:
                         if coins_owned >= dict_i[5]:
-                            buyChar(5)
+                            buyAvatar(5)
                         else:
                             messagebox.showerror(
-                                "Peyment Unsuccessfull - Jump", error_unsufficient_coins)
+                                "Payment Unsuccessfull - Jump", error_unsufficient_coins)
                 if pos[0] > 499 and pos[0] < 602 and pos[1] > 250 and pos[1] < 373:
-                    if skin6:
+                    if "6" in skins_owned:
                         selected = selected6
                     else:
                         if coins_owned >= dict_i[6]:
-                            buyChar(6)
+                            buyAvatar(6)
                         else:
                             messagebox.showerror(
-                                "Peyment Unsuccessfull - Jump", error_unsufficient_coins)
+                                "Payment Unsuccessfull - Jump", error_unsufficient_coins)
 
         if selected is selected1:
             text_to_display1 = eqipped
             textx1, texty1 = 130, 180
+            if current_char != "1":
+                pg.mouse.set_cursor(pg.cursors.Cursor(pg.SYSTEM_CURSOR_WAIT))
+                collection.find_one_and_update({"_id": ObjectId(idusr)}, {
+                                               "$set": {"curr_skins": "1"}})
         else:
             text_to_display1 = owned
             textx1, texty1 = 137, 180
         if selected is selected2:
             text_to_display2 = eqipped
             textx2, texty2 = 326, 180
+            if current_char != "2":
+                pg.mouse.set_cursor(pg.cursors.Cursor(pg.SYSTEM_CURSOR_WAIT))
+                collection.find_one_and_update({"_id": ObjectId(idusr)}, {
+                                               "$set": {"curr_skins": "2"}})
         else:
-            if skin2:
+            if "2" in skins_owned:
                 text_to_display2 = owned
                 textx2, texty2 = 334, 180
             else:
@@ -2752,8 +2759,12 @@ def Character_menu():
         if selected is selected3:
             text_to_display3 = eqipped
             textx3, texty3 = 524, 180
+            if current_char != "3":
+                pg.mouse.set_cursor(pg.cursors.Cursor(pg.SYSTEM_CURSOR_WAIT))
+                collection.find_one_and_update({"_id": ObjectId(idusr)}, {
+                                               "$set": {"curr_skins": "3"}})
         else:
-            if skin3:
+            if "3" in skins_owned:
                 text_to_display3 = owned
                 textx3, texty3 = 531, 180
             else:
@@ -2762,8 +2773,12 @@ def Character_menu():
         if selected is selected4:
             text_to_display4 = eqipped
             textx4, texty4 = 130, 340
+            if current_char != "4":
+                pg.mouse.set_cursor(pg.cursors.Cursor(pg.SYSTEM_CURSOR_WAIT))
+                collection.find_one_and_update({"_id": ObjectId(idusr)}, {
+                                               "$set": {"curr_skins": "4"}})
         else:
-            if skin4:
+            if "4" in skins_owned:
                 text_to_display4 = owned
                 textx4, texty4 = 137, 340
             else:
@@ -2772,8 +2787,12 @@ def Character_menu():
         if selected is selected5:
             text_to_display5 = eqipped
             textx5, texty5 = 326, 340
+            if current_char != "5":
+                pg.mouse.set_cursor(pg.cursors.Cursor(pg.SYSTEM_CURSOR_WAIT))
+                collection.find_one_and_update({"_id": ObjectId(idusr)}, {
+                                               "$set": {"curr_skins": "5"}})
         else:
-            if skin5:
+            if "5" in skins_owned:
                 text_to_display5 = owned
                 textx5, texty5 = 334, 340
             else:
@@ -2782,8 +2801,12 @@ def Character_menu():
         if selected is selected6:
             text_to_display6 = eqipped
             textx6, texty6 = 524, 340
+            if current_char != "6":
+                pg.mouse.set_cursor(pg.cursors.Cursor(pg.SYSTEM_CURSOR_WAIT))
+                collection.find_one_and_update({"_id": ObjectId(idusr)}, {
+                                               "$set": {"curr_skins": "6"}})
         else:
-            if skin6:
+            if "6" in skins_owned:
                 text_to_display6 = owned
                 textx6, texty6 = 531, 340
             else:
@@ -3609,10 +3632,11 @@ def people():
         pg.display.update()
 
 
+def donate():
+    pass
+
 btmClick = 420
 btmClick2 = 420
-
-
 def Settings():
     global btmClick
     global btmClick2
@@ -3624,21 +3648,17 @@ def Settings():
         window.blit(text_level2, (x, y))
 
     def Game_Update():
-        text_text_setting("CHECKING", (255, 255, 255), 433, 198, 25, "times")
         try:
-            req = Request(
-                "https://playwithaayan.000webhostapp.com/game_update.html")
-            html_page = urlopen(req)
-            soup = BeautifulSoup(html_page, "html.parser")
-            html_text = soup.get_text()
-            html_text = html_text.split()
-            # Here if value is 0 then theres no update, while 1 indicates update. Every version has an incremented value from before.
-            if html_text[0] == "1":
+            update_collection = db["Jump Update"]
+            check_update_inDB = update_collection.find()
+            for updates in check_update_inDB:
+                updateMain = updates["Update2"]
+            if updateMain:
                 updateORnot = messagebox.askyesno(
-                    "Jump - Update", "Version 2.0 found. Do you want to update the game ?")
+                    "Jump - Update", "New Version found. Do you want to update the game ?")
                 if updateORnot:
                     wb.open_new_tab("https://aayan-yasin25.itch.io/jump")
-            elif html_text[0] == "0":
+            elif not updateMain:
                 messagebox.showinfo(
                     "Jump - Update", "No update found, Keep playing :)")
         except Exception:
@@ -3650,13 +3670,20 @@ def Settings():
             posS = pg.mouse.get_pos()
             if eventsS.type == pg.QUIT:
                 quit_game()
-            if posS[0] < 23 and posS[1] < 23 or posS[0] > 420 and posS[0] < 480 and posS[1] > 128 and posS[1] < 153 or posS[0] > 491 and posS[0] < 552 and posS[1] > 128 and posS[1] < 153 or posS[0] > 411 and posS[0] < 559 and posS[1] > 266 and posS[1] < 301 or posS[0] > 420 and posS[0] < 480 and posS[1] > 199 and posS[1] < 219 or posS[0] > 491 and posS[0] < 552 and posS[1] > 199 and posS[1] < 219:
+            if posS[0] < 23 and posS[1] < 23 or posS[0] < 48 and posS[1] < 23 or posS[0] < 122 and posS[1] < 23 or posS[0] > 420 and posS[0] < 480 and posS[1] > 128 and posS[1] < 153 or posS[0] > 491 and posS[0] < 552 and posS[1] > 128 and posS[1] < 153 or posS[0] > 411 and posS[0] < 559 and posS[1] > 266 and posS[1] < 301 or posS[0] > 420 and posS[0] < 480 and posS[1] > 199 and posS[1] < 219 or posS[0] > 491 and posS[0] < 552 and posS[1] > 199 and posS[1] < 219:
                 pg.mouse.set_cursor(pg.cursors.Cursor(pg.SYSTEM_CURSOR_HAND))
             else:
                 pg.mouse.set_cursor(pg.cursors.Cursor(pg.SYSTEM_CURSOR_ARROW))
             if eventsS.type == pg.MOUSEBUTTONDOWN:
                 if posS[0] < 23 and posS[1] < 23:
                     Options()
+                if posS[0] < 48 and posS[1] < 23:
+                    pg.mouse.set_cursor(
+                        pg.cursors.Cursor(pg.SYSTEM_CURSOR_WAIT))
+                    Game_Update()
+                if posS[0] < 122 and posS[1] < 23:
+                    pg.mouse.set_cursor(pg.cursors.Cursor(pg.SYSTEM_CURSOR_WAIT))
+                    donate()
                 if posS[0] > 420 and posS[0] < 480 and posS[1] > 128 and posS[1] < 153:
                     pg.mixer.music.set_volume(0.2)
                     btmClick = 420
@@ -3676,6 +3703,13 @@ def Settings():
         text_text_setting("Settings", (0, 0, 0), 255, 40, 60, "areal")
         pg.draw.rect(window, (172, 172, 172), (0, 0, 23, 23))
         text_text_setting("<", (0, 0, 0), 5, -1, 20, "helvetica")
+        pg.draw.rect(window, (172, 172, 172), (26, 0, 23, 23))
+        font_update = pg.font.SysFont('segoeuisymbol', 18, True, False)
+        text_update_rotated = font_update.render("➠", True, "black")
+        text_update_rotated = pg.transform.rotate(text_update_rotated, -90)
+        window.blit(text_update_rotated, [27, 2.5])
+        pg.draw.rect(window, (172, 172, 172), (52, 0, 70, 23))
+        text_text_setting("Donate", (0, 0, 0), 57, -1, 17, "comicsansms")
         text_text_setting("Music", (0, 0, 0), 135, 131, 30, "corbel")
         text_text_setting("Sound Fx", (0, 0, 0), 136, 201, 30, "corbel")
         text_text_setting("More Games", (0, 0, 0), 136, 272, 30, "corbel")
@@ -4258,6 +4292,234 @@ def account_settings(email, uname):
         pg.display.update()
 
 
+def avatar_menu():
+    global selected_Avatars
+    global selected1_Avatars
+    global selected2_Avatars
+    global selected3_Avatars
+    global selected4_Avatars
+    global selected5_Avatars
+    global selected6_Avatars
+    global idusr
+    error_unsufficient_coins = "You do not have sufficient amount of coins for this avatar."
+    owned = "Owned"
+    eqipped = "Equipped"
+    dict_i = {2: 3000, 3: 7000, 4: 12000, 5: 25000, 6: 50000}
+    price_2, price_3, price_4, price_5, price_6 = f"$ {dict_i[2]}", f"$ {dict_i[3]}", f"$ {dict_i[4]}", f"$ {dict_i[5]}", f"$ {dict_i[6]}"
+    text_color = "black"
+    text_to_display1, text_to_display2, text_to_display3, text_to_display4, text_to_display5, text_to_display6 = None, None, None, None, None, None
+    sec_1 = 0
+    clock = pg.time.Clock()
+    fps = 35
+
+    def text(text, x, y, color, family, size):
+        font = pg.font.SysFont(family, size)
+        rndFONT = font.render(text, True, color)
+        window.blit(rndFONT, (x, y))
+
+    def buyAvatar(fileNumber):
+        pg.mouse.set_cursor(pg.cursors.Cursor(pg.SYSTEM_CURSOR_WAIT))
+        coins_to_deduct_from_db = coins_owned-dict_i[fileNumber]
+        collection.find_one_and_update({"_id": ObjectId(idusr)}, {
+                                       "$set": {"coins": str(coins_to_deduct_from_db)}})
+        new_avatars_owned = "".join(avatars_owned)
+        if fileNumber == 2:
+            collection.find_one_and_update(
+                {"_id": ObjectId(idusr)}, {"$set": {"avatars": f"{new_avatars_owned} 2"}})
+        if fileNumber == 3:
+            collection.find_one_and_update(
+                {"_id": ObjectId(idusr)}, {"$set": {"avatars": f"{new_avatars_owned} 3"}})
+        if fileNumber == 4:
+            collection.find_one_and_update(
+                {"_id": ObjectId(idusr)}, {"$set": {"avatars": f"{new_avatars_owned} 4"}})
+        if fileNumber == 5:
+            collection.find_one_and_update(
+                {"_id": ObjectId(idusr)}, {"$set": {"avatars": f"{new_avatars_owned} 5"}})
+        if fileNumber == 6:
+            collection.find_one_and_update(
+                {"_id": ObjectId(idusr)}, {"$set": {"avatars": f"{new_avatars_owned} 6"}})
+
+    while True:
+        idusr = pickle.load(open(UserNameSavedFile, "rb"))
+        names = collection.find({"_id": ObjectId(idusr)})
+        for namess in names:
+            Available_coins = str(numerize.numerize(int(namess["coins"])))
+            Available_coins_Main = int(namess["coins"])
+            avatars_owned = list(namess["avatars"])
+            current_avatar = namess["curr_avatars"]
+        coins_owned = Available_coins_Main
+        window.fill((224, 224, 224))
+        for events in pg.event.get():
+            if events.type == pg.QUIT:
+                quit_game()
+            pos = pg.mouse.get_pos()
+            if pos[0] < 23 and pos[1] < 23 or pos[0] > 25 and pos[1] > -1 and pos[0] < 48 and pos[1] < 24 or pos[0] > 107 and pos[0] < 211 and pos[1] > 87 and pos[1] < 215 or pos[0] > 303 and pos[0] < 407 and pos[1] > 87 and pos[1] < 215 or pos[0] > 499 and pos[0] < 602 and pos[1] > 87 and pos[1] < 215 or pos[0] > 107 and pos[0] < 211 and pos[1] > 250 and pos[1] < 373 or pos[0] > 303 and pos[0] < 407 and pos[1] > 250 and pos[1] < 373 or pos[0] > 499 and pos[0] < 602 and pos[1] > 250 and pos[1] < 373:
+                pg.mouse.set_cursor(pg.cursors.Cursor(pg.SYSTEM_CURSOR_HAND))
+            else:
+                pg.mouse.set_cursor(pg.cursors.Cursor(pg.SYSTEM_CURSOR_ARROW))
+            if events.type == pg.MOUSEBUTTONDOWN:
+                if pos[0] < 23 and pos[1] < 23:
+                    pg.mouse.set_cursor(
+                        pg.cursors.Cursor(pg.SYSTEM_CURSOR_WAIT))
+                    profile("own", "none")
+                if pos[0] > 25 and pos[1] > -1 and pos[0] < 48 and pos[1] < 24:
+                    messagebox.showinfo(
+                        "Characters info - Jump", "1. Default Jump icon.\n2. Fight till death avatar.\n3. Dictator avatar.\n4. Party with green avatar.\n5. Jump characters assemble avatar.\n6. This King Avatar.")
+                if pos[0] > 107 and pos[0] < 211 and pos[1] > 87 and pos[1] < 215:
+                    selected_Avatars = selected1_Avatars
+                if pos[0] > 303 and pos[0] < 407 and pos[1] > 87 and pos[1] < 215:
+                    if "2" in avatars_owned:
+                        selected_Avatars = selected2_Avatars
+                    else:
+                        if coins_owned >= dict_i[2]:
+                            buyAvatar(2)
+                        else:
+                            messagebox.showerror(
+                                "Payment Unsuccessfull - Jump", error_unsufficient_coins)
+                if pos[0] > 499 and pos[0] < 602 and pos[1] > 87 and pos[1] < 215:
+                    if "3" in avatars_owned:
+                        selected_Avatars = selected3_Avatars
+                    else:
+                        if coins_owned >= dict_i[3]:
+                            buyAvatar(3)
+                        else:
+                            messagebox.showerror(
+                                "Payment Unsuccessfull - Jump", error_unsufficient_coins)
+                if pos[0] > 107 and pos[0] < 211 and pos[1] > 250 and pos[1] < 373:
+                    if "4" in avatars_owned:
+                        selected_Avatars = selected4_Avatars
+                    else:
+                        if coins_owned >= dict_i[4]:
+                            buyAvatar(4)
+                        else:
+                            messagebox.showerror(
+                                "Payment Unsuccessfull - Jump", error_unsufficient_coins)
+                if pos[0] > 303 and pos[0] < 407 and pos[1] > 250 and pos[1] < 373:
+                    if "5" in avatars_owned:
+                        selected_Avatars = selected5_Avatars
+                    else:
+                        if coins_owned >= dict_i[5]:
+                            buyAvatar(5)
+                        else:
+                            messagebox.showerror(
+                                "Payment Unsuccessfull - Jump", error_unsufficient_coins)
+                if pos[0] > 499 and pos[0] < 602 and pos[1] > 250 and pos[1] < 373:
+                    if "6" in avatars_owned:
+                        selected_Avatars = selected6_Avatars
+                    else:
+                        if coins_owned >= dict_i[6]:
+                            buyAvatar(6)
+                        else:
+                            messagebox.showerror(
+                                "Payment Unsuccessfull - Jump", error_unsufficient_coins)
+
+        if selected_Avatars is selected1_Avatars:
+            text_to_display1 = eqipped
+            if current_avatar != "1":
+                pg.mouse.set_cursor(pg.cursors.Cursor(pg.SYSTEM_CURSOR_WAIT))
+                collection.find_one_and_update({"_id": ObjectId(idusr)}, {
+                                               "$set": {"curr_avatars": "1"}})
+            textx1, texty1 = 130, 180
+        else:
+            text_to_display1 = owned
+            textx1, texty1 = 137, 180
+        if selected_Avatars is selected2_Avatars:
+            text_to_display2 = eqipped
+            if current_avatar != "2":
+                pg.mouse.set_cursor(pg.cursors.Cursor(pg.SYSTEM_CURSOR_WAIT))
+                collection.find_one_and_update({"_id": ObjectId(idusr)}, {
+                                               "$set": {"curr_avatars": "2"}})
+            textx2, texty2 = 326, 180
+        else:
+            if "2" in avatars_owned:
+                text_to_display2 = owned
+                textx2, texty2 = 334, 180
+            else:
+                text_to_display2 = price_2
+                textx2, texty2 = 336, 180
+        if selected_Avatars is selected3_Avatars:
+            text_to_display3 = eqipped
+            if current_avatar != "3":
+                pg.mouse.set_cursor(pg.cursors.Cursor(pg.SYSTEM_CURSOR_WAIT))
+                collection.find_one_and_update({"_id": ObjectId(idusr)}, {
+                                               "$set": {"curr_avatars": "3"}})
+            textx3, texty3 = 524, 180
+        else:
+            if "3" in avatars_owned:
+                text_to_display3 = owned
+                textx3, texty3 = 531, 180
+            else:
+                text_to_display3 = price_3
+                textx3, texty3 = 529, 180
+        if selected_Avatars is selected4_Avatars:
+            text_to_display4 = eqipped
+            if current_avatar != "4":
+                pg.mouse.set_cursor(pg.cursors.Cursor(pg.SYSTEM_CURSOR_WAIT))
+                collection.find_one_and_update({"_id": ObjectId(idusr)}, {
+                                               "$set": {"curr_avatars": "4"}})
+            textx4, texty4 = 130, 340
+        else:
+            if "4" in avatars_owned:
+                text_to_display4 = owned
+                textx4, texty4 = 137, 340
+            else:
+                text_to_display4 = price_4
+                textx4, texty4 = 134, 340
+        if selected_Avatars is selected5_Avatars:
+            text_to_display5 = eqipped
+            if current_avatar != "5":
+                pg.mouse.set_cursor(pg.cursors.Cursor(pg.SYSTEM_CURSOR_WAIT))
+                collection.find_one_and_update({"_id": ObjectId(idusr)}, {
+                                               "$set": {"curr_avatars": "5"}})
+            textx5, texty5 = 326, 340
+        else:
+            if "5" in avatars_owned:
+                text_to_display5 = owned
+                textx5, texty5 = 334, 340
+            else:
+                text_to_display5 = price_5
+                textx5, texty5 = 332, 340
+        if selected_Avatars is selected6_Avatars:
+            text_to_display6 = eqipped
+            if current_avatar != "6":
+                pg.mouse.set_cursor(pg.cursors.Cursor(pg.SYSTEM_CURSOR_WAIT))
+                collection.find_one_and_update({"_id": ObjectId(idusr)}, {
+                                               "$set": {"curr_avatars": "6"}})
+            textx6, texty6 = 524, 340
+        else:
+            if "6" in avatars_owned:
+                text_to_display6 = owned
+                textx6, texty6 = 531, 340
+            else:
+                text_to_display6 = price_6
+                textx6, texty6 = 524, 340
+
+        pg.draw.rect(window, (177, 177, 177),
+                     (selected_Avatars[0], selected_Avatars[1], 105, 129))
+        text(f"Coins : {str(Available_coins)}", screen_w -
+             (83+len(str(Available_coins))*13), 2, (30, 30, 30), "comicsansms", 22)
+        text("Avatars", (screen_w//2)-55, 30, "black", "comicsansms", 30)
+        pg.draw.rect(window, (172, 172, 172), (0, 0, 23, 23))
+        text("<", 5, -1, "black", "helvetica", 20)
+        pg.draw.rect(window, (172, 172, 172), (25, 0, 23, 23))
+        text("ⓘ", 28, -3, "black", "segoeuisymbol", 20)
+        add_image(IconFile, 120, 110, 80, 70)
+        add_image(Avatar2File, 315, 110, 80, 70)
+        add_image(Avatar3File, 510, 110, 80, 70)
+        add_image(Avatar4File, 120, 260, 80, 70)
+        add_image(Avatar5File, 315, 260, 80, 70)
+        add_image(Avatar6File, 510, 260, 80, 70)
+        text(text_to_display1, textx1, texty1+13, text_color, "helvatica", 20)
+        text(text_to_display2, textx2, texty2+13, text_color, "helvatica", 20)
+        text(text_to_display3, textx3, texty3+13, text_color, "helvatica", 20)
+        text(text_to_display4, textx4, texty4+3, text_color, "helvatica", 20)
+        text(text_to_display5, textx5, texty5+3, text_color, "helvatica", 20)
+        text(text_to_display6, textx6, texty6+3, text_color, "helvatica", 20)
+        sec_1 += 1
+        pg.display.update()
+        clock.tick(fps)
+
+
 def profile(own_or_other, id_of_user):
     if own_or_other == "own":
         global IconFile
@@ -4284,11 +4546,8 @@ def profile(own_or_other, id_of_user):
             if rank_leaderboard_alltime == 0:
                 rank_leaderboard_alltime = "None"
             player_likes = str(numerize.numerize(namess["likes"]))
-            char2_owned = namess["skin2"]
-            char3_owned = namess["skin3"]
-            char4_owned = namess["skin4"]
-            char5_owned = namess["skin5"]
-            char6_owned = namess["skin6"]
+            char_owned = namess["skins"]
+            equiped_avatar_plr = int(namess["curr_avatars"])
 
         if MainScore < 50000:
             title_plr = "Junior"
@@ -4337,7 +4596,7 @@ def profile(own_or_other, id_of_user):
                 pos = pg.mouse.get_pos()
                 if events2.type == pg.QUIT:
                     quit_game()
-                if pos[0] < 23 and pos[1] < 23 or pos[0] > 623 and pos[1] < 23 or pos[0] > 85 and pos[1] > 74 and pos[0] < 166 and pos[1] < 95 or pos[0] > 178 and pos[1] > 41 and pos[0] < 202 and pos[1] < 61 or pos[0] > 160-title_fit and pos[0] < 179-title_fit and pos[1] > 152 and pos[1] < 173 or pos[0] > 5 and pos[1] > 105 and pos[0] < 74 and pos[1] < 127:
+                if pos[0] < 23 and pos[1] < 23 or pos[0] > 623 and pos[1] < 23 or pos[0] > 85 and pos[1] > 74 and pos[0] < 166 and pos[1] < 95 or pos[0] > 178 and pos[1] > 41 and pos[0] < 202 and pos[1] < 61 or pos[0] > 160-title_fit and pos[0] < 179-title_fit and pos[1] > 152 and pos[1] < 173 or pos[0] > 5 and pos[1] > 105 and pos[0] < 74 and pos[1] < 127 or pos[0] > 60 and pos[1] > 30 and pos[0] < 75 and pos[1] < 47:
                     pg.mouse.set_cursor(
                         pg.cursors.Cursor(pg.SYSTEM_CURSOR_HAND))
                 else:
@@ -4368,17 +4627,16 @@ def profile(own_or_other, id_of_user):
                             Log_In()
                     if pos[0] > 85 and pos[1] > 74 and pos[0] < 166 and pos[1] < 95:
                         account_settings(MainEmail, MainName)
-                    # if pos[0] > 60 and pos[1] > 30 and pos[0] < 75 and pos[1] < 47:
-                        # change_profile_pic()
+                    if pos[0] > 60 and pos[1] > 30 and pos[0] < 75 and pos[1] < 47:
+                        pg.mouse.set_cursor(
+                            pg.cursors.Cursor(pg.SYSTEM_CURSOR_WAIT))
+                        avatar_menu()
                     if pos[0] > 5 and pos[1] > 105 and pos[0] < 74 and pos[1] < 127:
                         messagebox.showinfo(
                             "Jump - Accounts Level", "Level Up:\nYou need <Remaining-xp> more xp to progress onto next level ( <Current-xp>/<Required-xp> ).\n\nWhat And How ?:\nThis is your accounts level which could be increased by earning xp after every match. Maximum level is Level 50.")
                     if pos[0] > 178 and pos[1] > 41 and pos[0] < 202 and pos[1] < 61:
                         pyperclip.copy(MainName)
                         copy_text = "✔"
-
-            if os.path.isfile(IconFile):
-                IconFile = "assets\JUMP-ICON.png"
 
             if sec_1 > 30:
                 Char5 = rd.choice(
@@ -4397,7 +4655,7 @@ def profile(own_or_other, id_of_user):
 
             window.fill((224, 224, 224))
             try:
-                add_image(IconFile, 5, 30, 70, 70)
+                add_image(list_avatars[equiped_avatar_plr-1], 5, 30, 70, 70)
             except Exception:
                 pass
             pg.draw.rect(window, (172, 172, 172), (0, 0, 23, 23))
@@ -4411,8 +4669,8 @@ def profile(own_or_other, id_of_user):
             text(f"{player_likes} likes", "black",
                  175, 76, "segoeuisymbol", 12)
             text("Log Out", "black", screen_w-67, 0, "comicsansms", 15)
-            # pg.draw.rect(window, (224, 224, 224), (60, 27, 20, 20))
-            # text("✎", "black", 63, 25, "segoeuisymbol", 15)
+            pg.draw.rect(window, (224, 224, 224), (60, 27, 20, 20))
+            text("✎", "black", 63, 25, "segoeuisymbol", 15)
             pg.draw.rect(window, "black", (5, 105, 66+4, 22))
             pg.draw.rect(window, "white", (7, 107, 66, 18))
             text(f"Level {Accounts_Level_plr}",
@@ -4433,15 +4691,15 @@ def profile(own_or_other, id_of_user):
                  "black", 353, 125, "comicsansms", 15)
             pg.draw.rect(window, "gray", (350, 155, 310, 215))
             pg.draw.rect(window, (0, 0, 0), (380, 183, 30, 50))
-            if char2_owned:
+            if "2" in char_owned:
                 pg.draw.rect(window, (0, 130, 0), (490, 183, 30, 50))
-            if char3_owned:
+            if "3" in char_owned:
                 pg.draw.rect(window, (227, 0, 193), (595, 183, 30, 50))
-            if char4_owned:
+            if "4" in char_owned:
                 pg.draw.rect(window, Char4, (380, 295, 30, 50))
-            if char5_owned:
+            if "5" in char_owned:
                 pg.draw.rect(window, Char5, (490, 295, 30, 50))
-            if char6_owned:
+            if "6" in char_owned:
                 pg.draw.rect(window, Char6, (595, 295, 30, 50))
             sec_1 += 1
             sec_2 += 1
@@ -4474,12 +4732,9 @@ def profile(own_or_other, id_of_user):
             player_likes_show = numerize.numerize(otherss["likes"])
             players_who_already_liked_this_account = otherss["liked_by"]
             online_offline = otherss["online"]
-            char2_owned = otherss["skin2"]
-            char3_owned = otherss["skin3"]
-            char4_owned = otherss["skin4"]
-            char5_owned = otherss["skin5"]
-            char6_owned = otherss["skin6"]
+            char_owned = otherss["skins"]
             country_other_joined_jump = (otherss["country"].split())[0]
+            equiped_avatar_other = int(otherss["curr_avatars"])
 
         if OtherScore < 50000:
             title_other = "Junior"
@@ -4540,8 +4795,6 @@ def profile(own_or_other, id_of_user):
                         pyperclip.copy(OtherName)
                         copy_text = "✔"
 
-            IconFile = "assets\JUMP-ICON.png"
-
             if online_offline:
                 online_offline_show = "Online"
                 online_width = 6
@@ -4569,7 +4822,7 @@ def profile(own_or_other, id_of_user):
 
             window.fill((224, 224, 224))
             try:
-                add_image(IconFile, 5, 30, 70, 70)
+                add_image(list_avatars[equiped_avatar_other-1], 5, 30, 70, 70)
             except Exception:
                 pass
             pg.draw.rect(window, (172, 172, 172), (0, 0, 23, 23))
@@ -4599,15 +4852,15 @@ def profile(own_or_other, id_of_user):
                  "black", 353, 125, "comicsansms", 15)
             pg.draw.rect(window, "gray", (350, 155, 310, 215))
             pg.draw.rect(window, (0, 0, 0), (380, 183, 30, 50))
-            if char2_owned:
+            if "2" in char_owned:
                 pg.draw.rect(window, (0, 130, 0), (490, 183, 30, 50))
-            if char3_owned:
+            if "3" in char_owned:
                 pg.draw.rect(window, (227, 0, 193), (595, 183, 30, 50))
-            if char4_owned:
+            if "4" in char_owned:
                 pg.draw.rect(window, Char4, (380, 295, 30, 50))
-            if char5_owned:
+            if "5" in char_owned:
                 pg.draw.rect(window, Char5, (490, 295, 30, 50))
-            if char6_owned:
+            if "6" in char_owned:
                 pg.draw.rect(window, rd.choice(
                     ((255, 0, 0), (0, 255, 0), (0, 0, 255))), (595, 295, 30, 50))
             sec_1 += 1
@@ -4624,6 +4877,8 @@ def menu():
     global MainName
     global Available_coins
     global country_player_joined_jump
+    global selected
+    global selected_Avatars
     black = (0, 0, 0)
     white = (255, 255, 255)
     title_x = 270
@@ -4662,6 +4917,8 @@ def menu():
         level4 = namess["level4"].split()
         level5 = namess["level5"].split()
         level6 = namess["level6"].split()
+        current_char = namess["curr_skins"]
+        current_avatar = namess["curr_avatars"]
         Sum_Score_week = int(level1[1]) + int(level2[1]) + int(level3[1]) + \
             int(level4[1]) + int(level5[1]) + int(level6[1])
         Sum_Score_Alltime = int(level1[2]) + int(level2[2]) + int(
@@ -4680,11 +4937,33 @@ def menu():
         collection.find_one_and_update(
             {"_id": ObjectId(idusr)}, {"$set": {"last_online": ""}})
 
+    if current_char == "1":
+        selected = selected1
+    if current_char == "2":
+        selected = selected2
+    if current_char == "3":
+        selected = selected3
+    if current_char == "4":
+        selected = selected4
+    if current_char == "5":
+        selected = selected5
+    if current_char == "6":
+        selected = selected6
+
+    if current_avatar == "1":
+        selected_Avatars = selected1_Avatars
+    if current_avatar == "2":
+        selected_Avatars = selected2_Avatars
+    if current_avatar == "3":
+        selected_Avatars = selected3_Avatars
+    if current_avatar == "4":
+        selected_Avatars = selected4_Avatars
+    if current_avatar == "5":
+        selected_Avatars = selected5_Avatars
+    if current_avatar == "6":
+        selected_Avatars = selected6_Avatars
+
     while True:
-        if os.path.isfile(IconFile):
-            IconFile = "assets\JUMP-ICON.png"
-        # else:
-        #     IconFile = "assets\PROFILE-IMAGE.png"
         if account_banned_not:
             messagebox.showerror(
                 "Jump - Account Banned", f"Dear {MainName} your account has been banned permanently. For further details contact at costumer support.")
@@ -4738,7 +5017,7 @@ def menu():
                 files_available_not()
 
         window.fill((224, 224, 224))
-        add_image(IconFile, 5, 5, 50, 50)
+        add_image(list_avatars[int(current_avatar)-1], 5, 5, 50, 50)
         Text(f"{MainName}", (30, 30, 30), 60, 3, "comicsansms", 20)
         Text(f"Score : {str(numerize.numerize(MainScore))}",
              (30, 30, 30), 60, 33, "comicsansms", 15)
@@ -4846,11 +5125,10 @@ def sign_up():
                         "highscore_week": 0,
                         "highscore_All_times": 0,
                         "leaderboard_prize": False,
-                        "skin2": False,
-                        "skin3": False,
-                        "skin4": False,
-                        "skin5": False,
-                        "skin6": False,
+                        "skins": "",
+                        "avatars": "",
+                        "curr_skins": "1",
+                        "curr_avatars": "1",
                         "account_level": 1,
                         "level1": "True 0 0",
                         "level2": "False 0 0",
@@ -6682,6 +6960,7 @@ def Log_In():
 def Start_Screen():
     global collection
     global playing_online_offline
+    global db
     color = 150
 
     try:
@@ -6757,7 +7036,8 @@ def Start_Screen():
                         except Exception:
                             pass
                         menu()
-                except Exception:
+                except Exception as e:
+                    print(e)
                     perform = False
                     playing_online_offline = False
                     login_Screen_message_x = screen_w/3-30
