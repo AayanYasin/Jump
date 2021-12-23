@@ -5,7 +5,6 @@ import random as rd
 import sys
 from tkinter import *
 from tkinter import messagebox, filedialog
-import shutil
 import time as t
 import webbrowser as wb
 from bs4 import BeautifulSoup
