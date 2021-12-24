@@ -187,18 +187,17 @@ def Game_over():
             Level4 = data["level4"].split()
             Level5 = data["level5"].split()
             Level6 = data["level6"].split()
-        match Current_Levelw:
-            case 1:
+            if Current_Levelw == 1:
                 current_l = "level1"
-            case 2:
+            if Current_Levelw == 2:
                 current_l = "level2"
-            case 3:
+            if Current_Levelw == 3:
                 current_l = "level3"
-            case 4:
+            if Current_Levelw == 4:
                 current_l = "level4"
-            case 5:
+            if Current_Levelw == 5:
                 current_l = "level5"
-            case 6:
+            if Current_Levelw == 6:
                 current_l = "level6"
 
         if Current_Level == 1:
@@ -2657,7 +2656,7 @@ def Character_menu():
     error_unsufficient_coins = "You do not have sufficient amount of coins for this character."
     owned = "Owned"
     eqipped = "Equipped"
-    dict_i = {2: 500, 3: 1200, 4: 2700, 5: 5500, 6: 13000}
+    dict_i = {2: 1800, 3: 4200, 4: 8000, 5: 21000, 6: 50000}
     price_2, price_3, price_4, price_5, price_6 = f"$ {dict_i[2]}", f"$ {dict_i[3]}", f"$ {dict_i[4]}", f"$ {dict_i[5]}", f"$ {dict_i[6]}"
     text_color = "black"
     text_to_display1, text_to_display2, text_to_display3, text_to_display4, text_to_display5, text_to_display6 = None, None, None, None, None, None
@@ -3700,9 +3699,11 @@ def donate():
                 if pos[0] < 23 and pos[1] < 23:
                     Settings()
                 if pos[0] > 180 and pos[0] < 329 and pos[1] > 210 and pos[1] < 250:
-                    messagebox.showinfo("Jump - Donation via Easypaisa", "Inorder to donate via Easypaisa:\n1) Click send money to easpaisa account.\n2) Enter mobile number 03325242409.\n3) Enter desired amount and add custom message <Jump-Donation>\n4) Send :)")
+                    messagebox.showinfo("Jump - Donation via Easypaisa",
+                                        "Inorder to donate via Easypaisa:\n1) Click send money to easpaisa account.\n2) Enter mobile number 03325242409.\n3) Enter desired amount and add custom message <Jump-Donation>\n4) Send :)")
                 if pos[0] > 380 and pos[0] < 530 and pos[1] > 210 and pos[1] < 250:
-                    messagebox.showinfo("Jump - Donation via JazzCash", "Inorder to donate via JazzCash:\n1) Click on Money Transfer.\n2) Click JazzCash Transfer\n3) Enter mobile number 03325242409.\n3) Enter desired amount.\n4) Send :)")
+                    messagebox.showinfo(
+                        "Jump - Donation via JazzCash", "Inorder to donate via JazzCash:\n1) Click on Money Transfer.\n2) Click JazzCash Transfer\n3) Enter mobile number 03325242409.\n3) Enter desired amount.\n4) Send :)")
 
         pg.draw.rect(window, (172, 172, 172), (0, 0, 23, 23))
         pg.draw.rect(window, "black", (100+80, 200+10, 150, 40))
@@ -3714,8 +3715,10 @@ def donate():
              (0, 0, 0), screen_w//2-175, 135, "comicsansms", 18)
         text("Easypaisa", "white", 205, 214, "comicsansms", 20)
         text("JazzCash", "white", 405, 214, "comicsansms", 20)
-        text("<: Every rupee makes a difference :>", (0, 0, 0), screen_w//2-150, 300, "comicsansms", 18)
-        text(f"For more information contact aayanjump@gmail.com", "black",5, screen_h-21, "segoeuisymbol", 13)
+        text("<: Every rupee makes a difference :>", (0, 0, 0),
+             screen_w//2-150, 300, "comicsansms", 18)
+        text(f"For more information contact aayanjump@gmail.com",
+             "black", 5, screen_h-21, "segoeuisymbol", 13)
         pg.display.update()
 
 
@@ -4374,7 +4377,8 @@ def account_settings(email, uname):
         Entry_Name.text("Continue", (screen_w//2)-60,
                         284, "white", "comicsansms", 30)
         text("Forgot Password ?", "black", 200, 337, "segoeuisymbol", 12)
-        text(f"Account connected to {email}", "black",5, screen_h-21, "segoeuisymbol", 13)
+        text(f"Account connected to {email}", "black",
+             5, screen_h-21, "segoeuisymbol", 13)
         pg.display.update()
 
 
@@ -4721,7 +4725,8 @@ def profile(own_or_other, id_of_user):
                         try:
                             avatar_menu()
                         except Exception as e:
-                            messagebox.showerror("Jump - Avatar Error", f"Some files missing, please download them from aayan-yasin25.itch.io/jump to avoid future errors.\n\nError Caused:\n{e}")
+                            messagebox.showerror(
+                                "Jump - Avatar Error", f"Some files missing, please download them from aayan-yasin25.itch.io/jump to avoid future errors.\n\nError Caused:\n{e}")
                     if pos[0] > 5 and pos[1] > 105 and pos[0] < 74 and pos[1] < 127:
                         if int(Accounts_Level_plr[0]) < 50:
                             messagebox.showinfo(
@@ -5238,7 +5243,7 @@ def sign_up():
                         "avatars": "",
                         "curr_skins": "1",
                         "curr_avatars": "1",
-                        "account_level": 1,
+                        "account_level": "1 0",
                         "level1": "True 0 0",
                         "level2": "False 0 0",
                         "level3": "False 0 0",
@@ -7145,7 +7150,8 @@ def Start_Screen():
                         except Exception:
                             pass
                         menu()
-                except Exception:
+                except Exception as e:
+                    print(e)
                     perform = False
                     playing_online_offline = False
                     login_Screen_message_x = screen_w/3-30
