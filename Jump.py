@@ -3697,7 +3697,6 @@ def donate():
             else:
                 pg.mouse.set_cursor(pg.cursors.Cursor(pg.SYSTEM_CURSOR_ARROW))
             if events.type == pg.MOUSEBUTTONDOWN:
-                print(pos)
                 if pos[0] < 23 and pos[1] < 23:
                     Settings()
                 if pos[0] > 180 and pos[0] < 329 and pos[1] > 210 and pos[1] < 250:
@@ -7146,8 +7145,7 @@ def Start_Screen():
                         except Exception:
                             pass
                         menu()
-                except Exception as e:
-                    print(e)
+                except Exception:
                     perform = False
                     playing_online_offline = False
                     login_Screen_message_x = screen_w/3-30
