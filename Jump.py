@@ -37,6 +37,7 @@ JumpSoundfxFile = "assets\\sounds\\JumpOnLandSound.mp3"
 ShootSoundfxFile = "assets\\sounds\\GunShootSound.mp3"
 HitEnemySoundfxFile = "assets\\sounds\\HitIntoEnemySound.mp3"
 GameOverSoundfxFile = "assets\\sounds\\GameOverSound.wav"
+ScoreIncreaseSoundfxFile = "assets\\sounds\\ScoreIncreaseSoundfx.mp3"
 # Images and Icon
 IconFile = "assets\\images\\JUMP-ICON.png"
 Avatar2File = "assets\\images\\FightTillDeathAvatar.png"
@@ -143,11 +144,25 @@ def Game_over():
     NorF_x = 383
     NorF = None
     Now_click = False
-    time_to_update = 0
+    has_changed_value_inDB = 0
     now_play_gameover_sfx = True
+    score_to_display = 0
+    coins_to_display = 0
+    xp_y = 230
+    ifoffline = 0
     clock = pg.time.Clock()
 
-    SCORE = ((coinCollected+time)//2)
+    if not playing_online_offline:
+        Current_plr_Account_Level = 0
+        ifoffline = 1
+    elif playing_online_offline:
+        Current_plr_Account_Level = int(Accounts_Level_plr[0])
+
+    SCORE = ((coinCollected+time)//2) * (Current_plr_Account_Level+ifoffline)
+    if playing_online_offline:
+        EARNEDXP = ((SCORE*coinCollected)//time)
+    if not playing_online_offline or Current_plr_Account_Level >= 50:
+        EARNEDXP = 0
     idusr = pickle.load(open(UserNameSavedFile, "rb"))
 
     def text_screen_Go(text, color, x, y, family, size):
@@ -244,7 +259,10 @@ def Game_over():
         collection.find_one_and_update({"_id": ObjectId(idusr)}, {
                                        "$set": {current_l: f"True {new_score_week} {new_score_alltimes}"}})
         collection.find_one_and_update({"_id": ObjectId(idusr)}, {
-                                       "$set": {"coins": str(int(currentC)+int(coinCollected))}})
+                                       "$set": {"coins": str(int(currentC)+(int(coinCollected)+Current_plr_Account_Level))}})
+        if Current_plr_Account_Level < 50:
+            collection.find_one_and_update({"_id": ObjectId(idusr)}, {
+                                           "$set": {"account_level": f"{Accounts_Level_plr[0]} {int(Accounts_Level_plr[1])+EARNEDXP}"}})
 
     def level_unlock_gameover(Current_Levelw):
         pg.mouse.set_cursor(pg.cursors.Cursor(pg.SYSTEM_CURSOR_WAIT))
@@ -277,7 +295,7 @@ def Game_over():
             pos = pg.mouse.get_pos()
             if eventsGO.type == pg.QUIT:
                 quit_game()
-            if pos[0] < 23 and pos[1] < 23 or pos[0] > 250 and pos[0] < 360 and pos[1] > 295 and pos[1] < 345 or pos[0] > 312 and pos[0] < 452 and pos[1] > 295 and pos[1] < 345 and Now_click:
+            if pos[0] < 23 and pos[1] < 23 or pos[0] > 25 and pos[0] < 135 and pos[1] < 23 or pos[0] > 250 and pos[0] < 360 and pos[1] > 295 and pos[1] < 345 or pos[0] > 312 and pos[0] < 452 and pos[1] > 295 and pos[1] < 345 and Now_click:
                 pg.mouse.set_cursor(pg.cursors.Cursor(pg.SYSTEM_CURSOR_HAND))
             else:
                 pg.mouse.set_cursor(pg.cursors.Cursor(pg.SYSTEM_CURSOR_ARROW))
@@ -296,6 +314,9 @@ def Game_over():
                         menu()
                     elif not playing_online_offline:
                         Choose_Level(playing_online_offline)
+                if pos[0] > 25 and pos[0] < 135 and pos[1] < 23:
+                    score_to_display = SCORE
+                    coins_to_display = coinCollected+Current_plr_Account_Level
                 if pos[0] > 312 and pos[0] < 452 and pos[1] > 295 and pos[1] < 345 and Now_click:
                     if Current_Level == 1:
                         if playing_online_offline:
@@ -330,11 +351,36 @@ def Game_over():
                         elif not playing_online_offline:
                             Choose_Level(playing_online_offline)
 
-        if time_to_update == 20:
+        if score_to_display == SCORE and coins_to_display == coinCollected+Current_plr_Account_Level and has_changed_value_inDB == 0:
             if playing_online_offline:
                 pg.mouse.set_cursor(pg.cursors.Cursor(pg.SYSTEM_CURSOR_WAIT))
                 highscore_Update(Current_Level)
+            pg.mouse.set_cursor(pg.cursors.Cursor(pg.SYSTEM_CURSOR_ARROW))
+            has_changed_value_inDB = 1
             Now_click = True  # Enable to click Next, Restart or Back
+
+        if score_to_display != SCORE:
+            if Soundfx:
+                try:
+                    scoreincreasefx = pg.mixer.Sound(ScoreIncreaseSoundfxFile)
+                    scoreincreasefx.set_volume(0.5)
+                    pg.mixer.Sound.play(scoreincreasefx)
+                except Exception:
+                    pass
+            score_to_display += 5
+            if score_to_display > SCORE:
+                score_to_display = SCORE
+        if coins_to_display != coinCollected+Current_plr_Account_Level:
+            coins_to_display += 2
+            if coins_to_display > coinCollected+Current_plr_Account_Level:
+                coins_to_display = coinCollected+Current_plr_Account_Level
+
+        xp_y -= 1
+        if xp_y < 160:
+            xp_y = 160
+            xp_color = (224, 224, 224)
+        else:
+            xp_color = "darkgreen"
 
         if Current_Level != 6:
             NorF = "NEXT"
@@ -352,16 +398,24 @@ def Game_over():
         pg.draw.rect(window, black, (251, 295, 109, 50))
         pg.draw.rect(window, black, (370, 295, 82, 50))
         pg.draw.rect(window, (172, 172, 172), (0, 0, 23, 23))
+        pg.draw.rect(window, (1, 119, 8), (25, 0, 110, 23))
 
         text_screen_Go(u"\u2302", black, 5, 0, "segoeuisymbol", 15)
+        text_screen_Go("Skip Animation", white, 27, 0, "comicsansms", 15)
+        text_screen_Go(f"+{EARNEDXP} XP", xp_color,
+                       100, xp_y, "comicsansms", 15)
         text_screen_Go("Game Over", black, 240, 40, "areal", 57)
-        text_screen_Go(f"Score : {SCORE}", white, 282, 112, "serif", 32)
+        text_screen_Go(f"Score : {score_to_display}",
+                       white, 282, 112, "serif", 32)
+        text_screen_Go(f"x{Current_plr_Account_Level} Level Bonus",
+                       black, 460, 117, "comicsansms", 15)
         text_screen_Go(f"Time : {time}", white, 287, 173, "serif", 32)
-        text_screen_Go(f"Coins : {coinCollected}",
+        text_screen_Go(f"Coins : {coins_to_display}",
                        white, 288, 233, "serif", 32)
+        text_screen_Go(f"+{Current_plr_Account_Level} Level Bonus",
+                       black, 460, 240, "comicsansms", 15)
         text_screen_Go("RESTART", white, 256, 307, "helvetica", 25)
         text_screen_Go(NorF, white, NorF_x, 307, "helvetica", 25)
-        time_to_update += 1
         pg.display.flip()
         clock.tick(30)
 
@@ -3632,10 +3686,44 @@ def people():
 
 
 def donate():
-    pass
+    while True:
+        window.fill((224, 224, 224))
+        for events in pg.event.get():
+            pos = pg.mouse.get_pos()
+            if events.type == pg.QUIT:
+                quit_game()
+            if pos[0] < 23 and pos[1] < 23 or pos[0] > 180 and pos[0] < 329 and pos[1] > 210 and pos[1] < 250 or pos[0] > 380 and pos[0] < 530 and pos[1] > 210 and pos[1] < 250:
+                pg.mouse.set_cursor(pg.cursors.Cursor(pg.SYSTEM_CURSOR_HAND))
+            else:
+                pg.mouse.set_cursor(pg.cursors.Cursor(pg.SYSTEM_CURSOR_ARROW))
+            if events.type == pg.MOUSEBUTTONDOWN:
+                print(pos)
+                if pos[0] < 23 and pos[1] < 23:
+                    Settings()
+                if pos[0] > 180 and pos[0] < 329 and pos[1] > 210 and pos[1] < 250:
+                    messagebox.showinfo("Jump - Donation via Easypaisa", "Inorder to donate via Easypaisa:\n1) Click send money to easpaisa account.\n2) Enter mobile number 03325242409.\n3) Enter desired amount and add custom message <Jump-Donation>\n4) Send :)")
+                if pos[0] > 380 and pos[0] < 530 and pos[1] > 210 and pos[1] < 250:
+                    messagebox.showinfo("Jump - Donation via JazzCash", "Inorder to donate via JazzCash:\n1) Click on Money Transfer.\n2) Click JazzCash Transfer\n3) Enter mobile number 03325242409.\n3) Enter desired amount.\n4) Send :)")
+
+        pg.draw.rect(window, (172, 172, 172), (0, 0, 23, 23))
+        pg.draw.rect(window, "black", (100+80, 200+10, 150, 40))
+        pg.draw.rect(window, "black", (300+80, 200+10, 150, 40))
+
+        text("<", "black", 5, -1, "helvetica", 20)
+        text("Donate", (0, 0, 0), screen_w//2-60, 40, "comicsansms", 35)
+        text("70% of all donations will go towards charity.",
+             (0, 0, 0), screen_w//2-175, 135, "comicsansms", 18)
+        text("Easypaisa", "white", 205, 214, "comicsansms", 20)
+        text("JazzCash", "white", 405, 214, "comicsansms", 20)
+        text("<: Every rupee makes a difference :>", (0, 0, 0), screen_w//2-150, 300, "comicsansms", 18)
+        text(f"For more information contact aayanjump@gmail.com", "black",5, screen_h-21, "segoeuisymbol", 13)
+        pg.display.update()
+
 
 btmClick = 420
 btmClick2 = 420
+
+
 def Settings():
     global btmClick
     global btmClick2
@@ -3681,7 +3769,8 @@ def Settings():
                         pg.cursors.Cursor(pg.SYSTEM_CURSOR_WAIT))
                     Game_Update()
                 if posS[0] < 122 and posS[1] < 23:
-                    pg.mouse.set_cursor(pg.cursors.Cursor(pg.SYSTEM_CURSOR_WAIT))
+                    pg.mouse.set_cursor(
+                        pg.cursors.Cursor(pg.SYSTEM_CURSOR_WAIT))
                     donate()
                 if posS[0] > 420 and posS[0] < 480 and posS[1] > 128 and posS[1] < 153:
                     pg.mixer.music.set_volume(0.2)
@@ -4286,8 +4375,7 @@ def account_settings(email, uname):
         Entry_Name.text("Continue", (screen_w//2)-60,
                         284, "white", "comicsansms", 30)
         text("Forgot Password ?", "black", 200, 337, "segoeuisymbol", 12)
-        text(f"Account connected to {email}", "black",
-             5, screen_h-21, "segoeuisymbol", 13)
+        text(f"Account connected to {email}", "black",5, screen_h-21, "segoeuisymbol", 13)
         pg.display.update()
 
 
@@ -4541,12 +4629,14 @@ def profile(own_or_other, id_of_user):
             Available_coins = str(numerize.numerize(int(namess["coins"])))
             MainScore = namess["highscore_All_times"]
             rank_leaderboard_alltime = namess["rank_all_time"]
-            Accounts_Level_plr = namess["account_level"]
+            Accounts_Level_plr = namess["account_level"].split()
             if rank_leaderboard_alltime == 0:
                 rank_leaderboard_alltime = "None"
             player_likes = str(numerize.numerize(namess["likes"]))
             char_owned = namess["skins"]
             equiped_avatar_plr = int(namess["curr_avatars"])
+
+        required_xp_for_next_level = int(Accounts_Level_plr[0]) * 100 * 1.25
 
         if MainScore < 50000:
             title_plr = "Junior"
@@ -4629,10 +4719,17 @@ def profile(own_or_other, id_of_user):
                     if pos[0] > 60 and pos[1] > 30 and pos[0] < 75 and pos[1] < 47:
                         pg.mouse.set_cursor(
                             pg.cursors.Cursor(pg.SYSTEM_CURSOR_WAIT))
-                        avatar_menu()
+                        try:
+                            avatar_menu()
+                        except Exception as e:
+                            messagebox.showerror("Jump - Avatar Error", f"Some files missing, please download them from aayan-yasin25.itch.io/jump to avoid future errors.\n\nError Caused:\n{e}")
                     if pos[0] > 5 and pos[1] > 105 and pos[0] < 74 and pos[1] < 127:
-                        messagebox.showinfo(
-                            "Jump - Accounts Level", "Level Up:\nYou need <Remaining-xp> more xp to progress onto next level ( <Current-xp>/<Required-xp> ).\n\nWhat And How ?:\nThis is your accounts level which could be increased by earning xp after every match. Maximum level is Level 50.")
+                        if int(Accounts_Level_plr[0]) < 50:
+                            messagebox.showinfo(
+                                "Jump - Accounts Level", f"Level Up:\nYou need {int(required_xp_for_next_level-int(Accounts_Level_plr[1]))} more xp to progress onto next level ( {Accounts_Level_plr[1]}/{int(required_xp_for_next_level)} ).\n\nWhat And How ?:\nThis is your accounts level which could be increased by earning xp after every match. More the Level more benefits you get. Maximum level is Level 50.")
+                        if int(Accounts_Level_plr[0]) >= 50:
+                            messagebox.showinfo(
+                                "Jump - Accounts Level", f"Well Done Soldier, you reached Max Level. Now enjoy highest X50 benefits after each game.")
                     if pos[0] > 178 and pos[1] > 41 and pos[0] < 202 and pos[1] < 61:
                         pyperclip.copy(MainName)
                         copy_text = "✔"
@@ -4656,7 +4753,7 @@ def profile(own_or_other, id_of_user):
             try:
                 add_image(list_avatars[equiped_avatar_plr-1], 5, 30, 70, 70)
             except Exception:
-                pass
+                pg.draw.rect(window, "white", (5, 30, 70, 70))
             pg.draw.rect(window, (172, 172, 172), (0, 0, 23, 23))
             pg.draw.rect(window, (172, 172, 172), (25, 0, screen_w-100, 23))
             text("<", "black", 5, -1, "helvetica", 20)
@@ -4672,7 +4769,7 @@ def profile(own_or_other, id_of_user):
             text("✎", "black", 63, 25, "segoeuisymbol", 15)
             pg.draw.rect(window, "black", (5, 105, 66+4, 22))
             pg.draw.rect(window, "white", (7, 107, 66, 18))
-            text(f"Level {Accounts_Level_plr}",
+            text(f"Level {Accounts_Level_plr[0]}",
                  "black", 10.5, 105, "comicsansms", 15)
             pg.draw.ellipse(window, (100, 100, 100),
                             (160-title_fit, 153, 20, 20))
@@ -4724,7 +4821,7 @@ def profile(own_or_other, id_of_user):
             Other_coins = str(numerize.numerize(int(otherss["coins"])))
             OtherScore = otherss["highscore_All_times"]
             rank_leaderboard_alltime = otherss["rank_all_time"]
-            Accounts_Level_other = otherss["account_level"]
+            Accounts_Level_other = otherss["account_level"].split()[0]
             if rank_leaderboard_alltime == 0:
                 rank_leaderboard_alltime = "None"
             player_likes = otherss["likes"]
@@ -4823,7 +4920,7 @@ def profile(own_or_other, id_of_user):
             try:
                 add_image(list_avatars[equiped_avatar_other-1], 5, 30, 70, 70)
             except Exception:
-                pass
+                pg.draw.rect(window, "white", (5, 30, 70, 70))
             pg.draw.rect(window, (172, 172, 172), (0, 0, 23, 23))
             pg.draw.rect(window, (172, 172, 172), (25, 0, screen_w-100, 23))
             text("<", "black", 5, -1, "helvetica", 20)
@@ -4878,6 +4975,7 @@ def menu():
     global country_player_joined_jump
     global selected
     global selected_Avatars
+    global Accounts_Level_plr
     black = (0, 0, 0)
     white = (255, 255, 255)
     title_x = 270
@@ -4918,6 +5016,7 @@ def menu():
         level6 = namess["level6"].split()
         current_char = namess["curr_skins"]
         current_avatar = namess["curr_avatars"]
+        Accounts_Level_plr = namess["account_level"].split()
         Sum_Score_week = int(level1[1]) + int(level2[1]) + int(level3[1]) + \
             int(level4[1]) + int(level5[1]) + int(level6[1])
         Sum_Score_Alltime = int(level1[2]) + int(level2[2]) + int(
@@ -5004,6 +5103,15 @@ def menu():
                         "jump - Info notice from developer", show_message[1].replace("~", "\n").replace("_", " "))
                 collection.find_one_and_update({"_id": ObjectId(idusr)}, {
                                                "$set": {"show_message": "none"}})
+            if int(Accounts_Level_plr[0]) < 50:
+                if int(Accounts_Level_plr[1]) >= int(int(Accounts_Level_plr[0]) * 100 * 1.25):
+                    collection.find_one_and_update({"_id": ObjectId(idusr)}, {"$set": {
+                                                   "account_level": f"{int(Accounts_Level_plr[0])+1} {int(Accounts_Level_plr[1])-(int(int(Accounts_Level_plr[0]) * 100 * 1.25))}"}})
+                    messagebox.showinfo(
+                        "Jump - Account Level Up", f"Well Done {MainName}, you leveled up. Now you'll get {int(Accounts_Level_plr[0])+1}X benefits :>.")
+            if int(Accounts_Level_plr[0]) == 50 and int(Accounts_Level_plr[1]) != 0:
+                collection.find_one_and_update({"_id": ObjectId(idusr)}, {
+                                               "$set": {"account_level": f"50 0"}})
 
         title_y += title_V
         if title_y > 62:
@@ -5016,7 +5124,10 @@ def menu():
                 files_available_not()
 
         window.fill((224, 224, 224))
-        add_image(list_avatars[int(current_avatar)-1], 5, 5, 50, 50)
+        try:
+            add_image(list_avatars[int(current_avatar)-1], 5, 5, 50, 50)
+        except Exception:
+            pg.draw.rect(window, white, (5, 5, 50, 50))
         Text(f"{MainName}", (30, 30, 30), 60, 3, "comicsansms", 20)
         Text(f"Score : {str(numerize.numerize(MainScore))}",
              (30, 30, 30), 60, 33, "comicsansms", 15)
