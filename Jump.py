@@ -2661,8 +2661,10 @@ def Character_menu():
     text_color = "black"
     text_to_display1, text_to_display2, text_to_display3, text_to_display4, text_to_display5, text_to_display6 = None, None, None, None, None, None
     sec_1 = 0
+    get_data_from_DBNOW = True
     clock = pg.time.Clock()
     fps = 35
+    idusr = pickle.load(open(UserNameSavedFile, "rb"))
 
     class Player_Models:
         def __init__(self, x_axis, y_axis):
@@ -2709,12 +2711,14 @@ def Character_menu():
                 {"_id": ObjectId(idusr)}, {"$set": {"skins": f"{new_skins_owned} 6"}})
 
     while True:
-        names = collection.find({"_id": ObjectId(idusr)})
-        for namess in names:
-            Available_coins = str(numerize.numerize(int(namess["coins"])))
-            Available_coins_Main = int(namess["coins"])
-            skins_owned = list(namess["skins"])
-            current_char = namess["curr_skins"]
+        if get_data_from_DBNOW:
+            names = collection.find({"_id": ObjectId(idusr)})
+            for namess in names:
+                Available_coins = str(numerize.numerize(int(namess["coins"])))
+                Available_coins_Main = int(namess["coins"])
+                skins_owned = list(namess["skins"])
+                current_char = namess["curr_skins"]
+            get_data_from_DBNOW = False
         coins_owned = Available_coins_Main
         random5_m6 = rd.choice(((255, 0, 0), (0, 255, 0), (0, 0, 255)))
         if sec_1 > 30:
@@ -2732,7 +2736,7 @@ def Character_menu():
                 pg.mouse.set_cursor(pg.cursors.Cursor(pg.SYSTEM_CURSOR_ARROW))
             if events.type == MOUSEBUTTONDOWN:
                 if pos[0] < 23 and pos[1] < 23:
-                    Options()
+                    More()
                 if pos[0] > 25 and pos[1] > -1 and pos[0] < 48 and pos[1] < 24:
                     messagebox.showinfo(
                         "Characters info - Jump", "1. Default solid black.\n2. Solid Dark Green.\n3. Solid Dark Pink.\n4. Changes color at the begning of each level.\n5. Change color after 5 seconds.\n6. Changes color dynamically.")
@@ -2744,6 +2748,7 @@ def Character_menu():
                     else:
                         if coins_owned >= dict_i[2]:
                             buyAvatar(2)
+                            get_data_from_DBNOW = True
                         else:
                             messagebox.showerror(
                                 "Payment Unsuccessfull - Jump", error_unsufficient_coins)
@@ -2753,6 +2758,7 @@ def Character_menu():
                     else:
                         if coins_owned >= dict_i[3]:
                             buyAvatar(3)
+                            get_data_from_DBNOW = True
                         else:
                             messagebox.showerror(
                                 "Payment Unsuccessfull - Jump", error_unsufficient_coins)
@@ -2762,6 +2768,7 @@ def Character_menu():
                     else:
                         if coins_owned >= dict_i[4]:
                             buyAvatar(4)
+                            get_data_from_DBNOW = True
                         else:
                             messagebox.showerror(
                                 "Payment Unsuccessfull - Jump", error_unsufficient_coins)
@@ -2771,6 +2778,7 @@ def Character_menu():
                     else:
                         if coins_owned >= dict_i[5]:
                             buyAvatar(5)
+                            get_data_from_DBNOW = True
                         else:
                             messagebox.showerror(
                                 "Payment Unsuccessfull - Jump", error_unsufficient_coins)
@@ -2780,6 +2788,7 @@ def Character_menu():
                     else:
                         if coins_owned >= dict_i[6]:
                             buyAvatar(6)
+                            get_data_from_DBNOW = True
                         else:
                             messagebox.showerror(
                                 "Payment Unsuccessfull - Jump", error_unsufficient_coins)
@@ -2788,6 +2797,7 @@ def Character_menu():
             text_to_display1 = eqipped
             textx1, texty1 = 130, 180
             if current_char != "1":
+                get_data_from_DBNOW = True
                 pg.mouse.set_cursor(pg.cursors.Cursor(pg.SYSTEM_CURSOR_WAIT))
                 collection.find_one_and_update({"_id": ObjectId(idusr)}, {
                                                "$set": {"curr_skins": "1"}})
@@ -2798,6 +2808,7 @@ def Character_menu():
             text_to_display2 = eqipped
             textx2, texty2 = 326, 180
             if current_char != "2":
+                get_data_from_DBNOW = True
                 pg.mouse.set_cursor(pg.cursors.Cursor(pg.SYSTEM_CURSOR_WAIT))
                 collection.find_one_and_update({"_id": ObjectId(idusr)}, {
                                                "$set": {"curr_skins": "2"}})
@@ -2812,6 +2823,7 @@ def Character_menu():
             text_to_display3 = eqipped
             textx3, texty3 = 524, 180
             if current_char != "3":
+                get_data_from_DBNOW = True
                 pg.mouse.set_cursor(pg.cursors.Cursor(pg.SYSTEM_CURSOR_WAIT))
                 collection.find_one_and_update({"_id": ObjectId(idusr)}, {
                                                "$set": {"curr_skins": "3"}})
@@ -2826,6 +2838,7 @@ def Character_menu():
             text_to_display4 = eqipped
             textx4, texty4 = 130, 340
             if current_char != "4":
+                get_data_from_DBNOW = True
                 pg.mouse.set_cursor(pg.cursors.Cursor(pg.SYSTEM_CURSOR_WAIT))
                 collection.find_one_and_update({"_id": ObjectId(idusr)}, {
                                                "$set": {"curr_skins": "4"}})
@@ -2840,6 +2853,7 @@ def Character_menu():
             text_to_display5 = eqipped
             textx5, texty5 = 326, 340
             if current_char != "5":
+                get_data_from_DBNOW = True
                 pg.mouse.set_cursor(pg.cursors.Cursor(pg.SYSTEM_CURSOR_WAIT))
                 collection.find_one_and_update({"_id": ObjectId(idusr)}, {
                                                "$set": {"curr_skins": "5"}})
@@ -2854,6 +2868,7 @@ def Character_menu():
             text_to_display6 = eqipped
             textx6, texty6 = 524, 340
             if current_char != "6":
+                get_data_from_DBNOW = True
                 pg.mouse.set_cursor(pg.cursors.Cursor(pg.SYSTEM_CURSOR_WAIT))
                 collection.find_one_and_update({"_id": ObjectId(idusr)}, {
                                                "$set": {"curr_skins": "6"}})
@@ -5239,8 +5254,8 @@ def sign_up():
                         "highscore_week": 0,
                         "highscore_All_times": 0,
                         "leaderboard_prize": False,
-                        "skins": "",
-                        "avatars": "",
+                        "skins": "1",
+                        "avatars": "1",
                         "curr_skins": "1",
                         "curr_avatars": "1",
                         "account_level": "1 0",
@@ -7150,8 +7165,7 @@ def Start_Screen():
                         except Exception:
                             pass
                         menu()
-                except Exception as e:
-                    print(e)
+                except Exception:
                     perform = False
                     playing_online_offline = False
                     login_Screen_message_x = screen_w/3-30
