@@ -3785,10 +3785,12 @@ def Settings():
                     pg.mouse.set_cursor(
                         pg.cursors.Cursor(pg.SYSTEM_CURSOR_WAIT))
                     Game_Update()
-                if posS[0] < 122 and posS[1] < 23:
+                if posS[0] > 50 and posS[0] < 122 and posS[1] < 23:
                     pg.mouse.set_cursor(
                         pg.cursors.Cursor(pg.SYSTEM_CURSOR_WAIT))
-                    donate()
+                    # donate()
+                    messagebox.showwarning(
+                        "Jump - Donation", "Glad you tried, but unfortunately donation system is shutdown by the developer on 28 Dec 2021.")
                 if posS[0] > 420 and posS[0] < 480 and posS[1] > 128 and posS[1] < 153:
                     pg.mixer.music.set_volume(0.2)
                     btmClick = 420
@@ -4684,8 +4686,8 @@ def profile(own_or_other, id_of_user):
             title_plr = "Legend"
             title_fit = 27
         elif MainScore >= 5000000:
-            title_plr = "God"
-            title_fit = 45
+            title_plr = "Beast"
+            title_fit = 28
 
         Char4 = rd.choice(((254, 234, 0), (159, 32, 164),
                            (57, 121, 42), (96, 59, 44)))
@@ -4715,7 +4717,7 @@ def profile(own_or_other, id_of_user):
                             pg.cursors.Cursor(pg.SYSTEM_CURSOR_WAIT))
                         menu()
                     if pos[0] > 160-title_fit and pos[0] < 179-title_fit and pos[1] > 152 and pos[1] < 173:
-                        messagebox.showinfo("Jump - Titles", "1) Highscore > 0 => Junior\n2) Highscore > 50k => Expert\n3) Highscore > 110k => Master\n4) Highscore > 250k => Professor\n5) Highscore > 500k => Commander\n6) Highscore > 1M => President\n7) Highscore > 2M => King\n8) Highscore > 3M => Conqueror\n9) Highscore > 3.8M => Legend\n10) Highscore > 5M => God")
+                        messagebox.showinfo("Jump - Titles", "1) Highscore > 0 => Junior\n2) Highscore > 50k => Expert\n3) Highscore > 110k => Master\n4) Highscore > 250k => Professor\n5) Highscore > 500k => Commander\n6) Highscore > 1M => President\n7) Highscore > 2M => King\n8) Highscore > 3M => Conqueror\n9) Highscore > 3.8M => Legend\n10) Highscore > 5M => Beast")
                     if pos[0] > 623 and pos[1] < 23:
                         pg.mouse.set_cursor(
                             pg.cursors.Cursor(pg.SYSTEM_CURSOR_WAIT))
@@ -4870,7 +4872,7 @@ def profile(own_or_other, id_of_user):
         elif OtherScore >= 3800000 and OtherScore < 5000000:
             title_other = "Legend"
         elif OtherScore >= 5000000:
-            title_other = "God"
+            title_other = "Beast"
 
         Char4 = rd.choice(((254, 234, 0), (159, 32, 164),
                            (57, 121, 42), (96, 59, 44)))
