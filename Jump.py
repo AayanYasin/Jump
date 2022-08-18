@@ -4,13 +4,12 @@ from pygame.constants import *
 import random as rd
 import sys
 from tkinter import *
-from tkinter import messagebox, filedialog
+from tkinter import messagebox
 import time as t
 import webbrowser as wb
 from bs4 import BeautifulSoup
 from urllib.request import Request, urlopen
-from pygame.display import iconify
-from pymongo import MongoClient, DESCENDING, message
+from pymongo import MongoClient, DESCENDING
 from bson.objectid import ObjectId
 from datetime import date, datetime
 from numerize import numerize
@@ -99,7 +98,7 @@ selected6_Color = rd.choice(((255, 0, 0), (0, 255, 0), (0, 0, 255)))
 player_skin = {selected1: selected1_Color,
                selected2: selected2_Color, selected3: selected3_Color}
 
-version = "2.0.1.1"
+version = "2.5.1.0"
 
 
 def quit_game():
@@ -3732,7 +3731,7 @@ def donate():
         text("JazzCash", "white", 405, 214, "comicsansms", 20)
         text("<: Every rupee makes a difference :>", (0, 0, 0),
              screen_w//2-150, 300, "comicsansms", 18)
-        text(f"For more information contact aayanjump@gmail.com",
+        text(f"For more information contact playwithaayan25@gmail.com",
              "black", 5, screen_h-21, "segoeuisymbol", 13)
         pg.display.update()
 
@@ -3756,7 +3755,7 @@ def Settings():
             update_collection = db["Jump Update"]
             check_update_inDB = update_collection.find()
             for updates in check_update_inDB:
-                updateMain = updates["Update2"]
+                updateMain = updates["Update3"]
             if updateMain:
                 updateORnot = messagebox.askyesno(
                     "Jump - Update", "New Version found. Do you want to update the game ?")
@@ -3871,9 +3870,9 @@ def account_settings(email, uname):
                                  "Incorrect password !")
 
         if changed_name == 1:
-            sender_email = "aayanjump@gmail.com"
+            sender_email = "playwithaayan25@gmail.com"
             receiver_email = email
-            password = "A10485766a"
+            password = "tnkpajrofrhwwpah"
 
             message = MIMEMultipart("alternative")
             message["Subject"] = "Accounts Username Changed"
@@ -3919,9 +3918,9 @@ def account_settings(email, uname):
                 )
 
         if changed_pass == 1:
-            sender_email = "aayanjump@gmail.com"
+            sender_email = "playwithaayan25@gmail.com"
             receiver_email = email
-            password = "A10485766a"
+            password = "tnkpajrofrhwwpah"
 
             message = MIMEMultipart("alternative")
             message["Subject"] = "Accounts Password Changed"
@@ -5206,9 +5205,9 @@ def sign_up():
                     "Jump - Log In", "Account with this username already exist, please try again !")
             else:
                 try:
-                    sender_email = "aayanjump@gmail.com"
+                    sender_email = "playwithaayan25@gmail.com"
                     receiver_email = email
-                    password = "A10485766a"
+                    password = "tnkpajrofrhwwpah"
                     message = MIMEMultipart("alternative")
                     message["Subject"] = "Account Created On Jump"
                     message["From"] = sender_email
@@ -5216,7 +5215,7 @@ def sign_up():
                     text = f"""\
                     Hi {name},
                     Your account has been successfully created in Jump, on {datetime.today().strftime('%d/%m/%Y')}.
-                    We welcome you to the community. Feel free to provide feedback on itch.io about your experience. For any querries or problem email back at aayanjump@gmail.com.
+                    We welcome you to the community. Feel free to provide feedback on itch.io about your experience. For any querries or problem email back at playwithaayan25@gmail.com.
                     If this wasn't you then email us and we would remove this account.
                     Thanks,
                     The Jump Support"""
@@ -5225,7 +5224,7 @@ def sign_up():
                       <body>
                         <p>Hi {name},<br><br>
                            Your account has been successfully created in Jump, on {datetime.today().strftime('%d/%m/%Y')}.<br>
-                           We welcome you to the community. Feel free to provide feedback on <a href="https://aayan-yasin25.itch.io/jump">itch.io</a> about your experience. For any querries or problem email back at <a href=mailto:"aayanjump@gmail.com">aayanjump@gmail.com.</a><br><br>
+                           We welcome you to the community. Feel free to provide feedback on <a href="https://aayan-yasin25.itch.io/jump">itch.io</a> about your experience. For any querries or problem email back at <a href=mailto:"playwithaayan25@gmail.com">playwithaayan25@gmail.com.</a><br><br>
                            If this wasn't you then email us and we would remove this account.<br><br>
                            Thanks<br>
                            The Jump Support
@@ -5871,8 +5870,8 @@ def send_email_func(email, uname):
     global _6digit_Code
     _6digit_Code = rd.randrange(111111, 999999)
     receiver_email = email
-    sender_email = "aayanjump@gmail.com"
-    password = "A10485766a"
+    sender_email = "playwithaayan25@gmail.com"
+    password = "tnkpajrofrhwwpah"
 
     message = MIMEMultipart("alternative")
     message["Subject"] = "Reset Your Jump Password"
@@ -6877,7 +6876,7 @@ def Log_In():
             if pos[0] > 204 and pos[0] < 495 and pos[1] > 191 and pos[1] < 231 or pos[0] > 204 and pos[0] < 493 and pos[1] > 121 and pos[1] < 162:
                 pg.mouse.set_cursor(
                     pg.cursors.Cursor(pg.SYSTEM_CURSOR_IBEAM))
-            elif pos[0] > 200 and pos[0] < 500 and pos[1] > 270 and pos[1] < 320 or pos[0] > 402 and pos[0] < 500 and pos[1] > 249 and pos[1] < 261 or pos[0] > 198 and pos[0] < 330 and pos[1] > 328 and pos[1] < 341:
+            elif pos[0] > 200 and pos[0] < 500 and pos[1] > 270 and pos[1] < 320 or pos[0] > 402 and pos[0] < 500 and pos[1] > 249 and pos[1] < 261 or pos[0] > 198 and pos[0] < 330 and pos[1] > 328 and pos[1] < 341 or pos[0] > 301 and pos[0] < 404 and pos[1] > 360 and pos[1] < 381:
                 pg.mouse.set_cursor(
                     pg.cursors.Cursor(pg.SYSTEM_CURSOR_HAND))
             else:
@@ -6910,6 +6909,9 @@ def Log_In():
                 else:
                     activeb = False
                     active_colorb = (224, 224, 224)
+                if pos[0] > 301 and pos[0] < 404 and pos[1] > 360 and pos[1] < 381:
+                    playing_online_offline = False
+                    Choose_Level(playing_online_offline)
                 if pos[0] > 200 and pos[0] < 500 and pos[1] > 270 and pos[1] < 320:
                     password = textb1_Password+textb2_Password+textb3_Password + \
                         textb4_Password+textb5_Password+textb6_Password+textb7_Password
@@ -7079,6 +7081,10 @@ def Log_In():
                         25+45.5, "white", "comicsansms", 30)
         Entry_Name.text("Don't have an Account ?",
                         200, 326, "black", "segoeuisymbol", 12)
+        Entry_Name.text("Continue as Guest",
+                        305, 360, "black", "segoeuisymbol", 12)
+        Entry_Name.text("___________________",
+                        306, 362, "black", "segoeuisymbol", 12)
         Entry_Name.text("Forgot Password ?",
                         402, 247, "black", "segoeuisymbol", 12)
         Entry_Name.text(f"Version {version}", 7,
