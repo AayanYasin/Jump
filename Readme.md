@@ -48,18 +48,18 @@ J.U.M.P tests reflexes and adaptability across 6 unique levels, each introducing
 ## 🖼️ Gameplay & Level Mechanics
 *A look at the different stages, UI, and mechanics built into the engine:*
 
+<!--<p align="center">
+  <video src="https://github.com/user-attachments/assets/6242be1f-6b19-4fe2-995c-79258f350c92" controls="controls" width="22%"></video>
+</p>-->
+
 <p align="center">
-  <video src="showcase/1.mp4" controls="controls" width="100%"></video>
-  &nbsp;&nbsp;&nbsp;
-  <img src="showcase/1.jpg" alt="Home Page" width="150"/>
-  &nbsp;&nbsp;&nbsp;
-  <img src="showcase/2.jpg" alt="Shooting Mechanics" width="150"/>
-  &nbsp;&nbsp;&nbsp;
-  <img src="showcase/3.jpg" alt="Flappy Bird" width="150"/>
-  &nbsp;&nbsp;&nbsp;
-  <img src="showcase/4.jpg" alt="In-Game Economy" width="150"/>
+  <img src="showcase/1.jpg" alt="Home Page" width="22%"/>
+  <img src="showcase/2.jpg" alt="Shooting Mechanics" width="22%"/>
+  <img src="showcase/3.jpg" alt="Flappy Bird" width="22%"/>
+  <img src="showcase/4.jpg" alt="In-Game Economy" width="22%"/>
 </p>
 
 ---
 *Note: This project was built as a standalone logic and full-stack integration test. All core algorithms and database connections were hand-coded.*
+
 
