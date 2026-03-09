@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets/images/JUMP-ICON.png" alt="J.U.M.P Logo" width="150"/>
+  <img src="showcase/HKsGGu.jpg" alt="J.U.M.P Logo" width="250"/>
 </p>
 
 # J.U.M.P - 2D Platformer & Custom Engine
@@ -61,5 +61,6 @@ J.U.M.P tests reflexes and adaptability across 6 unique levels, each introducing
 
 ---
 *Note: This project was built as a standalone logic and full-stack integration test. All core algorithms and database connections were hand-coded.*
+
 
 
